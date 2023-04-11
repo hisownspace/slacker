@@ -21,3 +21,13 @@ class Workspace(db.Model):
   members = db.relationship("User", secondary="workspace_members", back_populates="workspaces", cascade="all, delete")
   owner = db.relationship("User", back_populates="workspaces_owned")
   
+  def to_dict(self):
+    return {
+      "id": self.id,
+      "name": self.name,
+      "icon_url": self.icon_url,
+      "owner_id": self.owner_id,
+      "channels": [channel.id for channel in self.channels],
+      "groups": [group.id for group in self.groups],
+      "members": [member.id for member in self.members]
+    }

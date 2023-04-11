@@ -11,9 +11,14 @@ class UserReaction(db.Model):
   # group_message_id = db.Column(db.Integer, db. ForeignKey("group_messages.id"), nullable=True)
 
   # relationships
-  # group_message = db.relationship("GroupMessage", overlaps="group_message_reactions,user_reactions", back_populates="reactions")
-  # group_user = db.relationship("User", overlaps="channel_message_reactions,channel_reactions,group_message_reactions,user_reactions,user_reactions", back_populates="group_reactions")
-
   message = db.relationship("Message", overlaps="message_reactions,user_reactions", back_populates="reactions")
   user = db.relationship("User", overlaps="message_reactions,user_reactions", back_populates="reactions")
   reaction = db.relationship("Reaction")
+
+  def to_dict(self):
+    return {
+      "id": self.id,
+      "user_id": self.user_id,
+      "reaction_id": self.reaction_id,
+      "message_id": self.message_id,
+    }

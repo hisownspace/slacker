@@ -28,3 +28,16 @@ class Channel(db.Model):
   moderators = db.relationship("User", secondary="channel_mods", back_populates="moderated_channels")
   messages = db.relationship("Message", back_populates="channel")
   workspace = db.relationship("Workspace", back_populates="channels")
+
+  def to_dict(self):
+    return {
+      "id": self.id,
+      "owner_id": self.owner_id,
+      "workspace_id": self.workspace_id,
+      "name": self.name,
+      "description": self.description,
+      "protected": self.protected,
+      "members": [member.id for member in self.members],
+      "messages": [message.id for message in self.messages],
+      "moderators": [moderator.id for moderator in self.moderators]
+    }

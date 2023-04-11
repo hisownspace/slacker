@@ -35,5 +35,8 @@ class User(db.Model, UserMixin):
       return {
           "id": self.id,
           "username": self.username,
-          "email": self.email
+          "email": self.email,
+          "workspaces": [workspace.id for workspace in self.workspaces],
+          "channels": [channel.id for channel in self.channels],
+          "groups": [group.id for group in self.groups]
       }

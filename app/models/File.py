@@ -10,3 +10,10 @@ class File(db.Model):
   
   # relationships
   message = db.relationship("Message", back_populates="files")
+
+  def to_dict(self):
+    return {
+      "id": self.id,
+      "message_id": self.message_id,
+      "url": self.url
+    }
