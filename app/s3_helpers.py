@@ -2,6 +2,7 @@ import boto3
 import botocore
 import os
 import uuid
+from datetime import datetime
 
 
 s3 = boto3.client(
@@ -14,7 +15,11 @@ IMAGE_EXTENSIONS = {
                     "jpg",
                     "jpeg",
                     "png",
-                    "gif"
+                    "gif",
+                    "svg",
+                    "webp",
+                    "avif",
+                    "apng"
 }
 
 def image_file(filename):
@@ -24,7 +29,13 @@ def image_file(filename):
 def get_unique_filename(filename):
     ext = filename.rsplit(".", 1)[1].lower()
     unique_filename = uuid.uuid4().hex
-    return f"{filename.rsplit('.', 1)[0]}-{unique_filename}.{ext}"
+    new_filename = ""
+    for char in filename.rsplit('.', 1)[0]:
+        if char.isalnum() or char in "-_.":
+            new_filename += char
+        if char == " ":
+            new_filename += "_"
+    return f"{datetime.now().strftime('%Y.%m.%d_%H.%M.%S.%f')}{new_filename}-{unique_filename}.{ext}"
 
 S3_BUCKET = os.environ.get("S3_BUCKET")
 
@@ -47,9 +58,10 @@ def upload_image_file_to_s3(file, acl="public-read"):
 
     return { "url": f"{S3_FILES_LOCATION}{file.filename}" }
 
-def remove_file_from_s3(key):
+def remove_file_from_s3(url):
+    key = url.rsplit('/')[-1]
     try:
-        s3.delete_object(
+        attempt = s3.delete_object(
         Bucket=S3_BUCKET,
         Key=key
         )
