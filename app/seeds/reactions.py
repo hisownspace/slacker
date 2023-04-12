@@ -19,8 +19,9 @@ def seed_reactions(**kwargs):
       if not line.startswith("#") and line != "\n" and line != "":
         description = ' '.join(line.split("#")[-1][:-1].split(" ")[3:])
         data_string = ' '.join(line.split("#")[-1][:-1].split(" "))
+        print(data_string.split("E")[0][:-1])
         if len(data_string) > 1:
-          unicode = data_string[1]
+          unicode = data_string.split("E")[0]
         if unicode and description and group and subgroup:
           reaction = {
                         "unicode": unicode,
@@ -32,7 +33,6 @@ def seed_reactions(**kwargs):
           reaction_object = Reaction(**reaction)
           db.session.add(reaction_object)
           reactions.append(reaction_object)
-          print(reaction_object.unicode)
     db.session.commit()
     
   return reactions

@@ -24,9 +24,9 @@ def image_file(filename):
 def get_unique_filename(filename):
     ext = filename.rsplit(".", 1)[1].lower()
     unique_filename = uuid.uuid4().hex
-    return f"{unique_filename}.{ext}"
+    return f"{filename.rsplit('.', 1)[0]}-{unique_filename}.{ext}"
 
-S3_BUCKET = os.environ.get("S3_PHOTO_BUCKET")
+S3_BUCKET = os.environ.get("S3_BUCKET")
 
 S3_FILES_LOCATION = f"https://{S3_BUCKET}.s3.amazonaws.com/"
 
