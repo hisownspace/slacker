@@ -15,6 +15,7 @@ python-dotenv = "*"
 flask-login = "*"
 boto3 = "*"
 flask-cors = "*"
+flask-socketio = "*"
 
 [dev-packages]
 

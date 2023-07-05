@@ -5,7 +5,7 @@ from flask_login import LoginManager
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 
-from app.models import db, User
+from app.models import db, User, production
 from app.config import Config
 from app.seeds import seed_commands
 
@@ -35,7 +35,7 @@ app.register_blueprint(channel_routes, url_prefix="/api/channels")
 
 
 db.init_app(app)
-Migrate(app, db)
+Migrate(app, db, render_as_batch=(not production))
 
 
 CORS(app)

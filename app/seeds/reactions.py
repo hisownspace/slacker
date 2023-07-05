@@ -19,7 +19,6 @@ def seed_reactions(**kwargs):
       if not line.startswith("#") and line != "\n" and line != "":
         description = ' '.join(line.split("#")[-1][:-1].split(" ")[3:])
         data_string = ' '.join(line.split("#")[-1][:-1].split(" "))
-        print(data_string.split("E")[0][:-1])
         if len(data_string) > 1:
           unicode = data_string.split("E")[0]
         if unicode and description and group and subgroup:

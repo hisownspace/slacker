@@ -1,6 +1,5 @@
 .venv/
 .env
 instance/
-migrations/
 app/__pycache__
 .vscode/

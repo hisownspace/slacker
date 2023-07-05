@@ -14,7 +14,7 @@ def authenticate():
   """Authenticates a user"""
   if current_user.is_authenticated:
     return current_user.to_dict()
-  return { "errors": ["Unauthorized"] }
+  return { "errors": { "auth": "Unauthorized" } }
 
 @auth_routes.route("/login", methods=["POST"])
 def login():
@@ -25,7 +25,7 @@ def login():
     user = User.query.filter(or_(User.email == form.data["email"], User.username == form.data["email"])).first()
     login_user(user)
     return user.to_dict()
-  return { "errors": [error for error in form.errors.values()] }, 401
+  return { "errors": form.errors }, 401
 
 @auth_routes.route("/logout")
 def logout():
@@ -48,9 +48,9 @@ def sing_up():
     db.session.commit()
     login_user(user)
     return user.to_dict()
-  return { "errors": [ error for error in form.errors.values()] }, 401
+  return { "errors": form.errors }, 401
 
 @auth_routes.route("/unauthorized")
 def unauthorized():
   """Returns unauthorized when authentication fails"""
-  return { "errors": ["Unauthorized"] }, 401
+  return { "errors": { "auth": "Unauthorized" } }, 401
