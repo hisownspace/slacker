@@ -14,15 +14,19 @@ from .api.auth_routes import auth_routes
 from .api.workspace_routes import workspace_routes
 from .api.channel_routes import channel_routes
 
-app = Flask(__name__, static_folder='../react-app/build', static_url_path='/')
+from .socket import socketio
+
+app = Flask(__name__, static_folder="../react-app/build", static_url_path="/")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "auth.unauthorized"
 
+
 @login_manager.user_loader
 def load_user(user_id):
-  return User.query.get(int(user_id))
+    return User.query.get(int(user_id))
+
 
 app.config.from_object(Config)
 
@@ -37,6 +41,7 @@ app.register_blueprint(channel_routes, url_prefix="/api/channels")
 db.init_app(app)
 Migrate(app, db, render_as_batch=(not production))
 
+socketio.init_app(app)
 
 CORS(app)
 
@@ -49,43 +54,50 @@ CORS(app)
 #             code = 301
 #             return redirect(url, code=code)
 
+
 @app.after_request
 def inject_csrf_token(res):
-  res.set_cookie(
-    'csrf_token',
-    generate_csrf(),
-    secure=False if os.environ.get("FLASK_DEBUG") else True,
-    samesite=None if os.environ.get("FLASK_DEBUG") else "Strict",
-    httponly=True
-  )
-  return res
+    res.set_cookie(
+        "csrf_token",
+        generate_csrf(),
+        secure=False if os.environ.get("FLASK_DEBUG") else True,
+        samesite=None if os.environ.get("FLASK_DEBUG") else "Strict",
+        httponly=True,
+    )
+    return res
+
 
 @app.route("/api/help")
 def help():
-  """This route provides information about all the backend routes!"""
-  func_list = {}
-  for rule in app.url_map.iter_rules():
-    if rule.endpoint != 'static':
-      for method in rule.methods:
-        if method != "OPTIONS" and method != "HEAD":
-          endpoint_method = method
-      key = endpoint_method + " " + rule.rule
-      func_list[key] = app.view_functions[rule.endpoint].__doc__
-  return jsonify(func_list)
+    """This route provides information about all the backend routes!"""
+    func_list = {}
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != "static":
+            for method in rule.methods:
+                if method != "OPTIONS" and method != "HEAD":
+                    endpoint_method = method
+            key = endpoint_method + " " + rule.rule
+            func_list[key] = app.view_functions[rule.endpoint].__doc__
+    return jsonify(func_list)
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
 def react_root(path):
     """
     This route will direct to the public directory in our
     react builds in the production environment for favicon
     or index.html requests
     """
-    if path == 'favicon.ico':
-        return app.send_from_directory('public', 'favicon.ico')
-    return app.send_static_file('index.html')
+    if path == "favicon.ico":
+        return app.send_from_directory("public", "favicon.ico")
+    return app.send_static_file("index.html")
 
 
 @app.errorhandler(404)
 def not_found(e):
-    return app.send_static_file('index.html')
+    return app.send_static_file("index.html")
+
+
+if __name__ == "__main__":
+    socketio.run(app)
