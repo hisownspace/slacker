@@ -6,8 +6,9 @@ import SignupFormPage from "./components/SignupFormPage";
 import LoginFormPage from "./components/LoginFormPage";
 import Navigation from "./components/Navigation";
 import Channel from "./components/Channel";
+import Sidebar from "./components/Sidebar";
 
-// import './App.css';
+import "./App.css";
 
 function App() {
   const dispatch = useDispatch();
@@ -27,19 +28,24 @@ function App() {
   return (
     <>
       <Navigation isLoaded={isLoaded} />
-      {isLoaded && (
-        <Switch>
-          <Route path="/login">
-            <LoginFormPage />
-          </Route>
-          <Route path="/signup">
-            <SignupFormPage />
-          </Route>
-          <Route path="/channel/:channelId">
-            <Channel />
-          </Route>
-        </Switch>
-      )}
+      <div className="container">
+        <Sidebar isLoaded={isLoaded} />
+        {isLoaded && (
+          <div className="content">
+            <Switch>
+              <Route path="/login">
+                <LoginFormPage />
+              </Route>
+              <Route path="/signup">
+                <SignupFormPage />
+              </Route>
+              <Route path="/channel/:channelId">
+                <Channel />
+              </Route>
+            </Switch>
+          </div>
+        )}
+      </div>
     </>
   );
 }

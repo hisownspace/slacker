@@ -1,0 +1,39 @@
+.sidebar-container {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: stretch;
+  align-items: stretch;
+
+  & > .sidebar-main {
+    order: 0;
+    flex: 0 0 auto;
+    align-self: auto;
+  }
+
+  & > .content {
+    order: 0;
+    flex: 1 1, auto;
+    align-self: auto;
+  }
+}
+
+.sidebar-main {
+  /* position: relative; */
+  height: 100vh;
+  width: 200px;
+  /* top: 0; */
+  /* left: 0; */
+  overflow: hidden;
+  /* resize: horizontal; */
+}
+
+.resize-handle {
+  width: 1px;
+  border: 1px solid black;
+  cursor: ew-resize;
+  background-color: grey;
+}
