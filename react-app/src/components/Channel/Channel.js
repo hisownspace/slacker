@@ -1,10 +1,12 @@
 import { io } from "socket.io-client";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 let socket;
 
 function Channel() {
+  let { channelId } = useParams();
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const user = useSelector((state) => state.session.user);
@@ -12,10 +14,13 @@ function Channel() {
   useEffect(() => {
     socket = io();
 
+    // socket.join(channelId);
+    socket.emit("join", channelId);
+
     socket.on("chat", (chat) => {
-      console.log(chat);
-      // window.alert(chat);
       setMessages((messages) => [...messages, chat]);
+      console.log(chat);
+      // }
     });
 
     return () => {
@@ -29,7 +34,8 @@ function Channel() {
 
   const sendChat = (e) => {
     e.preventDefault();
-    socket.emit("chat", { user: user.username, msg: chatInput });
+    console.log("hello!");
+    socket.emit("chat", { channelId, user: user.username, msg: chatInput });
 
     setChatInput("");
   };
