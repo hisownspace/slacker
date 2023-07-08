@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { debounce, throttle } from "lodash";
-import "./Sidebar.css";
+import "./Channels.css";
 
 const selectTarget = (fromElement, selector) => {
   if (!(fromElement instanceof HTMLElement)) {
@@ -10,7 +10,7 @@ const selectTarget = (fromElement, selector) => {
   }
 };
 
-function Sidebar() {
+function Channels() {
   const [resizeData, setResizeData] = useState({
     tracking: false,
     startWidth: null,
@@ -22,21 +22,23 @@ function Sidebar() {
   });
 
   const moveBorder = (e) => {
-    // debounce((e) => {
-    if (resizeData.tracking) {
-      const cursorScreenXDelta = e.screenX - resizeData.startCursorScreenX;
-      const newWidth = Math.min(
-        resizeData.startWidth + cursorScreenXDelta,
-        resizeData.maxWidth
-      );
-      resizeData.resizeTarget.style.width = `${newWidth}px`;
-    }
-    // });
+    debounce((e) => {
+      if (resizeData.tracking) {
+        const cursorScreenXDelta = e.screenX - resizeData.startCursorScreenX;
+        const newWidth = Math.min(
+          resizeData.startWidth + cursorScreenXDelta,
+          resizeData.maxWidth
+        );
+        resizeData.resizeTarget.style.width = `${newWidth}px`;
+      }
+      window.addEventListener("mouseup", (e) => {
+        releaseBorder(e);
+      });
+    })(e);
   };
 
   const grabBorder = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    document.body.style.cursor = "col-resize";
 
     const handleElement = e.currentTarget;
 
@@ -58,8 +60,9 @@ function Sidebar() {
     });
   };
 
-  const releaseBorder = (e) => {
+  const releaseBorder = () => {
     if (resizeData?.tracking) {
+      document.body.style.cursor = "default";
       setResizeData({ ...resizeData, tracking: false });
     }
   };
@@ -67,15 +70,18 @@ function Sidebar() {
   return (
     <div
       className="sidebar-container"
-      onMouseLeave={releaseBorder}
+      // onMouseLeave={releaseBorder}
       onMouseMove={moveBorder}
     >
       <div className="sidebar-main">
-        <h1>Workspaces/Channels</h1>
+        <h1>Channels</h1>
+        <p>
+          Hello and welcome to this world, and be cool to those that love you
+        </p>
       </div>
       <div
         onMouseDown={grabBorder}
-        onMouseUp={releaseBorder}
+        // onMouseUp={releaseBorder}
         className="resize-handle"
         data-target=".sidebar-main"
       />
@@ -83,4 +89,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default Channels;

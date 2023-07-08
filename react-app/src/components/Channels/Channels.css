@@ -22,18 +22,22 @@
 }
 
 .sidebar-main {
-  /* position: relative; */
   height: 100vh;
   width: 200px;
-  /* top: 0; */
-  /* left: 0; */
+  max-width: 750px;
   overflow: hidden;
-  /* resize: horizontal; */
+  white-space: nowrap;
+}
+
+.sidebar-main > p,
+h1 {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .resize-handle {
   width: 1px;
   border: 1px solid black;
-  cursor: ew-resize;
+  cursor: col-resize;
   background-color: grey;
 }

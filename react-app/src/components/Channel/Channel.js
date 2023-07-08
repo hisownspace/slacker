@@ -12,14 +12,21 @@ function Channel() {
   const user = useSelector((state) => state.session.user);
 
   useEffect(() => {
-    socket = io();
+    socket = io("localhost:8000");
 
     socket.emit("join", channelId);
 
     socket.on("chat", (chat) => {
       setMessages((messages) => [...messages, chat]);
-      console.log(chat);
-      // }
+    });
+    socket.on("connect", () => {
+      const transport = socket.io.engine.transport.name;
+      console.log(transport);
+    });
+
+    socket.io.engine.on("upgrade", () => {
+      const upgradedTransport = socket.io.engine.transport.name;
+      console.log(upgradedTransport);
     });
 
     return () => {
@@ -33,7 +40,7 @@ function Channel() {
 
   const sendChat = (e) => {
     e.preventDefault();
-    socket.emit("chat", { channelId, user: user.username, msg: chatInput });
+    socket.emit("chat", { channelId, user: user?.username, msg: chatInput });
 
     setChatInput("");
   };

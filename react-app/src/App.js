@@ -6,7 +6,9 @@ import SignupFormPage from "./components/SignupFormPage";
 import LoginFormPage from "./components/LoginFormPage";
 import Navigation from "./components/Navigation";
 import Channel from "./components/Channel";
-import Sidebar from "./components/Sidebar";
+import Channels from "./components/Channels";
+import Workspaces from "./components/Workplaces";
+// import Sidebar from "./components/Sidebar";
 
 import "./App.css";
 
@@ -29,7 +31,8 @@ function App() {
     <>
       <Navigation isLoaded={isLoaded} />
       <div className="container">
-        <Sidebar isLoaded={isLoaded} />
+        <Workspaces isLoaded={isLoaded} />
+        <Channels isLoaded={isLoaded} />
         {isLoaded && (
           <div className="content">
             <Switch>
