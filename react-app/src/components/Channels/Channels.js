@@ -1,87 +1,61 @@
-import { useState } from "react";
-import { debounce, throttle } from "lodash";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import "./Channels.css";
+import Workspaces from "../Workplaces";
+import { loadChannels, loadUserChannels } from "../../store/channel.js";
 
-const selectTarget = (fromElement, selector) => {
-  if (!(fromElement instanceof HTMLElement)) {
-    return null;
-  } else {
-    return fromElement.querySelector(selector);
-  }
-};
+function Channels({
+  moveBorder,
+  grabBorder,
+  releaseBorder,
+  styleBorder,
+  unstyleBorder,
+}) {
+  const dispatch = useDispatch();
+  const channels = useSelector((state) => state.channel.allChannels);
+  const currWorkspace = useSelector(
+    (state) => state.workspaces.currentWorkspace
+  );
+  const user = useSelector((state) => state.user);
+  const [currChannels, setCurrChannels] = useState([]);
 
-function Channels() {
-  const [resizeData, setResizeData] = useState({
-    tracking: false,
-    startWidth: null,
-    startCursorScreenX: null,
-    handleWidth: 10,
-    resizeTarget: null,
-    parentElement: null,
-    maxWidth: null,
-  });
+  useEffect(() => {
+    (async () => {
+      console.log("hello");
+      const receivedChannels = await dispatch(loadChannels());
+      // const receivedUserChannels = await dispatch(loadUserChannels(user.id));
+    })();
+  }, [dispatch]);
 
-  const moveBorder = (e) => {
-    debounce((e) => {
-      if (resizeData.tracking) {
-        const cursorScreenXDelta = e.screenX - resizeData.startCursorScreenX;
-        const newWidth = Math.min(
-          resizeData.startWidth + cursorScreenXDelta,
-          resizeData.maxWidth
-        );
-        resizeData.resizeTarget.style.width = `${newWidth}px`;
-      }
-      window.addEventListener("mouseup", (e) => {
-        releaseBorder(e);
-      });
-    })(e);
-  };
-
-  const grabBorder = (e) => {
-    document.body.style.cursor = "col-resize";
-
-    const handleElement = e.currentTarget;
-
-    const targetSelector = handleElement.getAttribute("data-target");
-
-    const targetElement = selectTarget(
-      handleElement.parentElement,
-      targetSelector
-    );
-
-    setResizeData({
-      ...resizeData,
-      startWidth: targetElement.offsetWidth,
-      startCursorScreenX: e.screenX,
-      resizeTarget: targetElement,
-      parentElement: handleElement.parentElement,
-      maxWidth: handleElement.parentElement.offsetWidth,
-      tracking: true,
-    });
-  };
-
-  const releaseBorder = () => {
-    if (resizeData?.tracking) {
-      document.body.style.cursor = "default";
-      setResizeData({ ...resizeData, tracking: false });
+  useEffect(() => {
+    const tempCurrWorkspaces = [];
+    console.log(currWorkspace);
+    for (let i = 0; i < currWorkspace?.channels?.length; i++) {
+      console.log(channels);
+      tempCurrWorkspaces.push(channels[currWorkspace.channels[i]]);
     }
-  };
+    console.log(tempCurrWorkspaces);
+    setCurrChannels(tempCurrWorkspaces);
+  }, [currWorkspace]);
 
   return (
-    <div
-      className="sidebar-container"
-      // onMouseLeave={releaseBorder}
-      onMouseMove={moveBorder}
-    >
+    <div className="sidebar-container" onMouseMove={moveBorder}>
+      <Workspaces />
       <div className="sidebar-main">
-        <h1>Channels</h1>
-        <p>
-          Hello and welcome to this world, and be cool to those that love you
-        </p>
+        {currChannels?.map((channel) => (
+          <ul>
+            <Link key={channel?.id} to={`/client/channels/${channel?.id}`}>
+              {channel?.name}
+            </Link>
+          </ul>
+        ))}
       </div>
       <div
         onMouseDown={grabBorder}
-        // onMouseUp={releaseBorder}
+        onMouseUp={releaseBorder}
+        onMouseOver={styleBorder}
+        onMouseLeave={unstyleBorder}
         className="resize-handle"
         data-target=".sidebar-main"
       />

@@ -11,6 +11,12 @@ from app.forms import (
 channel_routes = Blueprint("channel_workspaces", __name__)
 
 
+@channel_routes.route("")
+def get_all_channels():
+    channels = Channel.query.all()
+    return {channel.id: channel.to_dict() for channel in channels}
+
+
 @channel_routes.route("/<int:id>")
 @login_required
 def get_channel(id):

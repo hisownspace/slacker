@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { debounce } from "lodash";
 import { useDispatch } from "react-redux";
 import { Route, Switch } from "react-router-dom";
 import { authenticate } from "./store/session";
@@ -9,12 +10,18 @@ import Channel from "./components/Channel";
 import Channels from "./components/Channels";
 import Workspaces from "./components/Workplaces";
 // import Sidebar from "./components/Sidebar";
+import ChatInterface from "./components/ChatInterface";
 
 import "./App.css";
 
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    dispatch(authenticate()).then(() => setIsLoaded(true));
+  }, [dispatch]);
+
   // useEffect(() => {
   //   (async () => {
   //     await dispatch(authenticate());
@@ -22,33 +29,24 @@ function App() {
   //   })();
   // }, [dispatch]);
 
-  // const [isLoaded, setIsLoaded] = useState(false);
-  useEffect(() => {
-    dispatch(authenticate()).then(() => setIsLoaded(true));
-  }, [dispatch]);
-
   return (
     <>
       <Navigation isLoaded={isLoaded} />
-      <div className="container">
-        <Workspaces isLoaded={isLoaded} />
-        <Channels isLoaded={isLoaded} />
-        {isLoaded && (
-          <div className="content">
-            <Switch>
-              <Route path="/login">
-                <LoginFormPage />
-              </Route>
-              <Route path="/signup">
-                <SignupFormPage />
-              </Route>
-              <Route path="/channel/:channelId">
-                <Channel />
-              </Route>
-            </Switch>
-          </div>
-        )}
-      </div>
+      {isLoaded && (
+        <div className="content">
+          <Switch>
+            <Route path="/client">
+              <ChatInterface isLoaded={isLoaded} />
+            </Route>
+            <Route path="/login">
+              <LoginFormPage />
+            </Route>
+            <Route path="/signup">
+              <SignupFormPage />
+            </Route>
+          </Switch>
+        </div>
+      )}
     </>
   );
 }

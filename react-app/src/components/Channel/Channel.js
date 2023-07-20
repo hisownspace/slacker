@@ -12,6 +12,7 @@ function Channel() {
   const user = useSelector((state) => state.session.user);
 
   useEffect(() => {
+    console.log("joining channel", channelId);
     socket = io("localhost:8000");
 
     socket.emit("join", channelId);
@@ -29,10 +30,11 @@ function Channel() {
       console.log(upgradedTransport);
     });
 
+    setMessages([]);
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [channelId]);
 
   const updateChatInput = (e) => {
     setChatInput(e.target.value);
