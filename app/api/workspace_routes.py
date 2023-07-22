@@ -31,7 +31,7 @@ def get_workspace(id):
 def get_my_workspaces():
     id = current_user.id
     my_workspaces = [workspace for workspace in User.query.get(id).workspaces]
-    return {"my_workspaces": [workspace.id for workspace in my_workspaces]}, 200
+    return [workspace.to_dict() for workspace in my_workspaces], 200
 
 
 @workspace_routes.route("", methods=["POST"])

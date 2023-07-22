@@ -16,6 +16,7 @@ const Workspaces = () => {
   }, [dispatch]);
 
   const changeWorkspace = async (id) => {
+    localStorage.currentWorkspace = id;
     const currentWorkspace = await dispatch(getCurrentWorkspace(id));
   };
 

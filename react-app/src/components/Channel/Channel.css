@@ -1,0 +1,14 @@
+.channel-chat {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chat-box {
+  justify-self: end;
+}
+
+.chat-form {
+  margin-top: 50px;
+}

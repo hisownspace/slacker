@@ -28,7 +28,7 @@
   max-width: 25vw;
 }
 
-.sidebar-main > p,
+.sidebar-main > ul,
 h1 {
   text-overflow: ellipsis;
   overflow: hidden;

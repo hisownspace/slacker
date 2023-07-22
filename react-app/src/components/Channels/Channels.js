@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "./Channels.css";
 import Workspaces from "../Workplaces";
 import { loadChannels, loadUserChannels } from "../../store/channel.js";
+import { getUserWorkspaces, getCurrentWorkspace } from "../../store/workspaces";
 
 function Channels({
   moveBorder,
@@ -19,23 +20,31 @@ function Channels({
   );
   const user = useSelector((state) => state.user);
   const [currChannels, setCurrChannels] = useState([]);
+  const userChannels = useSelector((state) => state.channel.userChannels);
+  const userWorkspaces = useSelector(
+    (state) => state.workspaces.userWorkspaces
+  );
 
   useEffect(() => {
     (async () => {
-      console.log("hello");
       const receivedChannels = await dispatch(loadChannels());
-      // const receivedUserChannels = await dispatch(loadUserChannels(user.id));
+      if (!currWorkspace.length) {
+        if (localStorage.currentWorkspace) {
+          const id = localStorage.currentWorkspace;
+          const currentWorkspace = await dispatch(getCurrentWorkspace(id));
+        } else {
+          const id = userWorkspaces[0]?.id;
+          const currentWorkspace = await dispatch(getCurrentWorkspace(id));
+        }
+      }
     })();
-  }, [dispatch]);
+  }, [dispatch, userWorkspaces]);
 
   useEffect(() => {
     const tempCurrWorkspaces = [];
-    console.log(currWorkspace);
     for (let i = 0; i < currWorkspace?.channels?.length; i++) {
-      console.log(channels);
       tempCurrWorkspaces.push(channels[currWorkspace.channels[i]]);
     }
-    console.log(tempCurrWorkspaces);
     setCurrChannels(tempCurrWorkspaces);
   }, [currWorkspace]);
 
@@ -44,10 +53,8 @@ function Channels({
       <Workspaces />
       <div className="sidebar-main">
         {currChannels?.map((channel) => (
-          <ul>
-            <Link key={channel?.id} to={`/client/channels/${channel?.id}`}>
-              {channel?.name}
-            </Link>
+          <ul key={channel.id}>
+            <Link to={`/client/channels/${channel?.id}`}>{channel?.name}</Link>
           </ul>
         ))}
       </div>

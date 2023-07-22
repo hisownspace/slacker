@@ -20,9 +20,10 @@ export const loadChannels = () => async (dispatch) => {
 };
 
 const initialState = {
-  userChannels: null,
-  allChannels: null,
-  ownedChannels: null,
+  userChannels: [],
+  allChannels: {},
+  ownedChannels: [],
+  currChannels: [],
 };
 
 export default function reducer(state = initialState, action) {

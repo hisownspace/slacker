@@ -12,7 +12,7 @@ const loadCurrentWorkspace = (workspaces) => ({
 });
 
 export const getUserWorkspaces = () => async (dispatch) => {
-  const response = await fetch("/api/workspaces");
+  const response = await fetch("/api/workspaces/user_spaces");
   if (response.ok) {
     const data = await response.json();
     dispatch(loadUserWorkspaces(data));

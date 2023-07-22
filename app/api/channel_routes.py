@@ -17,6 +17,12 @@ def get_all_channels():
     return {channel.id: channel.to_dict() for channel in channels}
 
 
+@channel_routes.route("/<int:id>/messages")
+def get_channel_messages(id):
+    channel = Channel.query.get(id)
+    return [message.to_dict() for message in channel.messages]
+
+
 @channel_routes.route("/<int:id>")
 @login_required
 def get_channel(id):
@@ -106,10 +112,10 @@ def edit_channel_protected(id):
     return {"errors": form.errors}
 
 
-@channel_routes.route("/<int:id>/messages")
-@login_required
-def get_channel_messages(id):
-    channel = Channel.query.get(id)
-    messages = channel.messages
-
-    return channel.to_dict()
+# @channel_routes.route("/<int:id>/messages")
+# @login_required
+# def get_channel_messages(id):
+#     channel = Channel.query.get(id)
+#     messages = channel.messages
+#
+#     return channel.to_dict()
