@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import "./Channels.css";
-import Workspaces from "../Workplaces";
+import Workspaces from "../Workspaces";
 import { loadChannels, loadUserChannels } from "../../store/channel.js";
 import { getUserWorkspaces, getCurrentWorkspace } from "../../store/workspaces";
 
@@ -26,18 +26,16 @@ function Channels({
   );
 
   useEffect(() => {
-    (async () => {
-      const receivedChannels = await dispatch(loadChannels());
-      if (!currWorkspace.length) {
-        if (localStorage.currentWorkspace) {
-          const id = localStorage.currentWorkspace;
-          const currentWorkspace = await dispatch(getCurrentWorkspace(id));
-        } else {
-          const id = userWorkspaces[0]?.id;
-          const currentWorkspace = await dispatch(getCurrentWorkspace(id));
-        }
+    dispatch(loadChannels());
+    if (!currWorkspace.length) {
+      if (localStorage.currentWorkspace) {
+        const id = localStorage.currentWorkspace;
+        dispatch(getCurrentWorkspace(id));
+      } else {
+        const id = userWorkspaces[0]?.id;
+        dispatch(getCurrentWorkspace(id));
       }
-    })();
+    }
   }, [dispatch, userWorkspaces]);
 
   useEffect(() => {
@@ -53,7 +51,7 @@ function Channels({
       <Workspaces />
       <div className="sidebar-main">
         {currChannels?.map((channel) => (
-          <ul key={channel.id}>
+          <ul key={channel?.id}>
             <Link to={`/client/channels/${channel?.id}`}>{channel?.name}</Link>
           </ul>
         ))}

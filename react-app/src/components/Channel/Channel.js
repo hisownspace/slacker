@@ -18,9 +18,7 @@ function Channel() {
   const [channel, setChannel] = useState(null);
 
   useEffect(() => {
-    (async () => {
-      await dispatch(loadChannelMessages(channelId));
-    })();
+    dispatch(loadChannelMessages(channelId));
   }, [dispatch, channelId]);
 
   useEffect(() => {

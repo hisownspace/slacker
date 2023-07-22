@@ -10,14 +10,12 @@ const Workspaces = () => {
   const workspaces = useSelector((store) => store.workspaces.userWorkspaces);
 
   useEffect(() => {
-    (async () => {
-      const workspaceData = await dispatch(getUserWorkspaces());
-    })();
+    dispatch(getUserWorkspaces());
   }, [dispatch]);
 
-  const changeWorkspace = async (id) => {
+  const changeWorkspace = (id) => {
     localStorage.currentWorkspace = id;
-    const currentWorkspace = await dispatch(getCurrentWorkspace(id));
+    dispatch(getCurrentWorkspace(id));
   };
 
   return (

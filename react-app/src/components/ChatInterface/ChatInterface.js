@@ -81,14 +81,12 @@ export default function ChatInterface(isLoaded) {
     });
   };
 
-  const releaseBorder = (e) => {
-    // if (resizeData?.tracking) {
+  const releaseBorder = () => {
     const handleElement = document.querySelector(".resize-handle");
     handleElement.style.borderRight = "1px solid lightgrey";
     handleElement.style.marginRight = "3px";
     document.body.style.cursor = "default";
     setResizeData({ ...resizeData, tracking: false });
-    // }
   };
 
   const moveBorder = (e) => {
