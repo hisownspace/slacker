@@ -67,7 +67,7 @@ export default function ChatInterface(isLoaded) {
 
     const targetElement = selectTarget(
       handleElement.parentElement,
-      targetSelector
+      targetSelector,
     );
 
     setResizeData({
@@ -98,9 +98,9 @@ export default function ChatInterface(isLoaded) {
         const cursorScreenXDelta =
           e.screenX - tempResizeData.startCursorScreenX;
         const newWidth = Math.min(
-          tempResizeData.startWidth + cursorScreenXDelta
+          tempResizeData.startWidth + cursorScreenXDelta,
         );
-        if (newWidth <= 50) {
+        if (newWidth <= 50 && tempResizeData) {
           tempResizeData.resizeTarget.style.width = "0px";
           tempResizeData.atEdge = true;
         } else {

@@ -1,12 +1,13 @@
 import os
 from flask import request
-from flask_socketio import SocketIO, emit, join_room, send
+from flask_socketio import SocketIO, emit, join_room, leave_room, send
 from flask_login import current_user
 
-from app.models import db, User, Message
+from app.models import db, User, Message, Reaction, UserReaction
 from app.forms import ChatMessage
 
 origins = os.environ.get("ORIGINS")
+print(origins)
 
 socketio = SocketIO(
     cors_allowed_origins=origins,
@@ -18,12 +19,36 @@ socketio = SocketIO(
 
 @socketio.on("join")
 def handle_join(channel_id):
-    print("joing channel", channel_id)
+    print("joining channel", channel_id)
     join_room(channel_id)
 
+@socketio.on("leave")
+def handle_leave(channel_id):
+    print("leaving channel", channel_id)
+    leave_room(channel_id)
+
+
+@socketio.on("react")
+def handle_reaction(emoji_id, message_id, channel_id, user_id):
+    message = Message.query.get(message_id)
+    userReaction = UserReaction.query.get({"message_id": message_id,"user_id":user_id,
+                                          "reaction_id":emoji_id})
+    if userReaction:
+        db.session.delete(userReaction)
+        db.session.commit()
+        emit("react", message.to_dict(), broadcast=True)
+    else:
+        reaction = Reaction.query.get(emoji_id)
+        
+        userReaction = UserReaction(reaction_id = int(emoji_id), user_id=user_id)
+        userReaction.message = message
+        db.session.add(userReaction)
+        db.session.commit()
+        emit("react", message.to_dict(), broadcast=True)
 
 @socketio.on("chat")
 def handle_chat(data):
+    print("\U0001F636")
     channel_id = data["channel_id"]
     content = data["content"]
     user_id = data["user_id"]

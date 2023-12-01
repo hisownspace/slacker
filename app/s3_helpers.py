@@ -61,7 +61,7 @@ def upload_image_file_to_s3(file, acl="public-read"):
 def remove_file_from_s3(url):
     key = url.rsplit('/')[-1]
     try:
-        attempt = s3.delete_object(
+        s3.delete_object(
         Bucket=S3_BUCKET,
         Key=key
         )

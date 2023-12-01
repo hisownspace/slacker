@@ -8,17 +8,20 @@ function LoginFormModal() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState({ email: [], password: [] });
   const { closeModal } = useModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = await dispatch(login(email, password));
     if (data) {
-      setErrors(data);
-      alert(data)
+      let tempErrors = { ...errors };
+      for (let error in data) {
+        tempErrors[error] = data[error];
+      }
+      setErrors(tempErrors);
     } else {
-        closeModal()
+      closeModal();
     }
   };
 
@@ -26,11 +29,6 @@ function LoginFormModal() {
     <>
       <h1>Log In</h1>
       <form onSubmit={handleSubmit}>
-        <ul>
-          {errors.map((error, idx) => (
-            <li key={idx}>{error}</li>
-          ))}
-        </ul>
         <label>
           Email
           <input
@@ -40,6 +38,11 @@ function LoginFormModal() {
             required
           />
         </label>
+        <ul>
+          {errors.email.map((error, idx) => (
+            <li key={idx}>{error}</li>
+          ))}
+        </ul>
         <label>
           Password
           <input
@@ -49,6 +52,11 @@ function LoginFormModal() {
             required
           />
         </label>
+        <ul>
+          {errors.password.map((error, idx) => (
+            <li key={idx}>{error}</li>
+          ))}
+        </ul>
         <button type="submit">Log In</button>
       </form>
     </>

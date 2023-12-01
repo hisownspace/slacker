@@ -22,9 +22,11 @@ def login():
   form = LoginForm()
   form["csrf_token"].data = request.cookies["csrf_token"]
   if form.validate_on_submit():
+    print("logging in!!!")
     user = User.query.filter(or_(User.email == form.data["email"], User.username == form.data["email"])).first()
     login_user(user)
     return user.to_dict()
+  print(form.errors)
   return { "errors": form.errors }, 401
 
 @auth_routes.route("/logout")

@@ -50,7 +50,7 @@ class Message(db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     content = db.Column(db.String(2000), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now())
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     # relationships
     channel = db.relationship("Channel", back_populates="messages")
@@ -72,6 +72,17 @@ class Message(db.Model):
     )
 
     def to_dict(self):
+        reactions = {}
+        for reaction in self.reactions:
+            if reaction.reaction_id in reactions:
+                reactions[reaction.reaction_id]["quantity"] += 1
+                reactions[reaction.reaction_id]["user_ids"].append(reaction.user_id)
+            else:
+                reactions[reaction.reaction_id] = reaction.to_dict()
+                reactions[reaction.reaction_id]["quantity"] = 1
+                reactions[reaction.reaction_id]["user_ids"] = [reaction.user_id]
+                del reactions[reaction.reaction_id]["user_id"]
+
         return {
             "id": self.id,
             "channel_id": self.channel_id,
@@ -79,7 +90,7 @@ class Message(db.Model):
             "user_id": self.user_id,
             "content": self.content,
             "files": [file.id for file in self.files],
-            "reactions": [reaction.id for reaction in self.reactions],
+            "reactions": reactions,
             "user": self.user.username,
             "timestamp": self.created_at.strftime("%-I:%M%p"),
             "date": self.created_at.strftime("%A, %B %-d")

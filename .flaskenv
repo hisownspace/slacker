@@ -1,1 +1,3 @@
+DATABASE_URL=sqlite:///dev.db
+FLASK_RUN_PORT=8000
 FLASK_DEBUG=True

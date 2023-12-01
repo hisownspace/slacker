@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "./Channels.css";
 import Workspaces from "../Workplaces";
 import { loadChannels, loadUserChannels } from "../../store/channel.js";
@@ -14,16 +14,31 @@ function Channels({
   unstyleBorder,
 }) {
   const dispatch = useDispatch();
+  const history = useHistory();
   const channels = useSelector((state) => state.channel.allChannels);
   const currWorkspace = useSelector(
-    (state) => state.workspaces.currentWorkspace
+    (state) => state.workspaces.currentWorkspace,
   );
+  const prevChannels = useSelector((state) => state.channel.userChannels);
   const user = useSelector((state) => state.user);
   const [currChannels, setCurrChannels] = useState([]);
   const userChannels = useSelector((state) => state.channel.userChannels);
   const userWorkspaces = useSelector(
-    (state) => state.workspaces.userWorkspaces
+    (state) => state.workspaces.userWorkspaces,
   );
+  const workspaceId = useSelector(
+    (state) => state.workspaces.currentWorkspace.id,
+  );
+
+  useEffect(() => {
+    const prevChannelId = prevChannels[workspaceId];
+    console.log(currWorkspace);
+    if (prevChannelId) {
+      history.push(`/client/channels/${prevChannelId}`);
+    } else if (currWorkspace?.channels) {
+      history.push(`/client/channels/${currWorkspace.channels[0]}`);
+    }
+  }, [workspaceId, currWorkspace]);
 
   useEffect(() => {
     (async () => {
@@ -34,7 +49,9 @@ function Channels({
           const currentWorkspace = await dispatch(getCurrentWorkspace(id));
         } else {
           const id = userWorkspaces[0]?.id;
-          const currentWorkspace = await dispatch(getCurrentWorkspace(id));
+          if (id) {
+            const currentWorkspace = await dispatch(getCurrentWorkspace(id));
+          }
         }
       }
     })();

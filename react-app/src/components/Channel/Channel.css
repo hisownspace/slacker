@@ -3,6 +3,23 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 100%;
+}
+
+.message-options {
+  display: inline;
+}
+
+.channel-message {
+  position: relative;
+  width: 100%;
+}
+
+.emoji-box {
+  display: none;
+  position: absolute;
+  top: -12px;
+  right: 65px;
 }
 
 .chat-box {

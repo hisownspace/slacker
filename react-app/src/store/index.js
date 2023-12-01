@@ -4,12 +4,14 @@ import session from "./session";
 import channel from "./channel";
 import workspaces from "./workspaces";
 import messages from "./messages";
+import emojis from "./emojis";
 
 const rootReducer = combineReducers({
   session,
   channel,
   workspaces,
   messages,
+  emojis,
 });
 
 let enhancer;

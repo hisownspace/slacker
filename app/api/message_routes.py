@@ -7,7 +7,6 @@ message_routes = Blueprint("messages", __name__)
 
 @message_routes.route("/new", methods=["POST"])
 def new_message(data):
-    with app.app_context():
     form = ChatMessage()
     for name, field in data.items():
         form.data[name] = field

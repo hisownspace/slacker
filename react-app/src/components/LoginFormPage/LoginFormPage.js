@@ -26,13 +26,13 @@ function LoginFormPage() {
     <>
       <h1>Log In</h1>
       <form onSubmit={handleSubmit}>
-        <ul>
-          {errors.map((error, idx) => (
-            <li key={idx}>{errors[error]}</li>
-          ))}
-        </ul>
         <label>
           Email
+          <ul>
+            {errors.email.map((error, idx) => {
+              <li key={idx}>{error}</li>;
+            })}
+          </ul>
           <input
             type="text"
             value={email}
@@ -42,6 +42,11 @@ function LoginFormPage() {
         </label>
         <label>
           Password
+          <ul>
+            {errors.password.map((error, idx) => {
+              <li key={idx}>{error}</li>;
+            })}
+          </ul>
           <input
             type="password"
             value={password}

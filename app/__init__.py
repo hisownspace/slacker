@@ -13,6 +13,7 @@ from .api.user_routes import user_routes
 from .api.auth_routes import auth_routes
 from .api.workspace_routes import workspace_routes
 from .api.channel_routes import channel_routes
+from .api.emoji_routes import emoji_routes
 
 from .socket import socketio
 
@@ -25,7 +26,8 @@ login_manager.login_view = "auth.unauthorized"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    print(user_id)
+    return User.query.get(user_id)
 
 
 app.config.from_object(Config)
@@ -36,6 +38,7 @@ app.register_blueprint(user_routes, url_prefix="/api/users")
 app.register_blueprint(auth_routes, url_prefix="/api/auth")
 app.register_blueprint(workspace_routes, url_prefix="/api/workspaces")
 app.register_blueprint(channel_routes, url_prefix="/api/channels")
+app.register_blueprint(emoji_routes, url_prefix="/api/emojis")
 
 
 db.init_app(app)

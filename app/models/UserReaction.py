@@ -4,10 +4,12 @@ from app.models import db
 class UserReaction(db.Model):
   __tablename__ = "user_reactions"
   
-  id = db.Column(db.Integer, primary_key=True)
-  user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-  reaction_id = db.Column(db.String(255), db.ForeignKey("reactions.id"), nullable=False)
-  message_id = db.Column(db.Integer, db.ForeignKey("messages.id"), nullable=True)
+  user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+  reaction_id = db.Column(db.String(255), db.ForeignKey("reactions.id"),
+                          nullable=False, primary_key=True)
+  message_id = db.Column(db.Integer, db.ForeignKey("messages.id"),
+                         nullable=True, primary_key=True)
+  __tableargs__ = db.UniqueConstraint('user_id', 'reaction_id', 'message_id')
   # group_message_id = db.Column(db.Integer, db. ForeignKey("group_messages.id"), nullable=True)
 
   # relationships
@@ -17,8 +19,8 @@ class UserReaction(db.Model):
 
   def to_dict(self):
     return {
-      "id": self.id,
       "user_id": self.user_id,
       "reaction_id": self.reaction_id,
       "message_id": self.message_id,
+      "reaction": self.reaction.unicode
     }
