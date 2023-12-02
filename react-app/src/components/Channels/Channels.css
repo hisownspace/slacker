@@ -37,7 +37,7 @@ h1 {
 .resize-handle {
   width: 1px;
   margin-right: 3px;
-  border-right: 1px solid lightgrey;
+  border-right: 1px solid black;
   cursor: col-resize;
   background-color: grey;
   box-sizing: border-box;

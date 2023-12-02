@@ -124,17 +124,18 @@ function Channel() {
       (message) => message.id === messageId,
     );
     const tempMessage = messages[tempMessageIdx];
-    console.log(tempMessage);
 
     const messageReaction = tempMessage.reactions[emojiId];
     const userIdx = messageReaction?.user_ids.findIndex(
       (user_id) => user_id === user.id,
     );
 
-    if (messageReaction?.user_ids[userIdx]) {
-      delete messageReaction?.user_ids[userIdx];
-    } else {
-      messageReaction?.user_ids.push(user.id);
+    if (messageReaction && messageReaction.user_ids[userIdx]) {
+      delete messageReaction.user_ids[userIdx];
+      messageReaction.quantity -= 1;
+    } else if (messageReaction) {
+      messageReaction.user_ids.push(user.id);
+      messageReaction.quantity += 1;
     }
 
     setMessages(tempMessages);
