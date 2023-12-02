@@ -20,6 +20,34 @@
   position: absolute;
   top: -12px;
   right: 65px;
+  cursor: pointer;
+}
+
+.reaction {
+  cursor: pointer;
+  list-style: none;
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 15px 15px;
+  margin: 0px 3px 8px 0;
+  font-size: 13px;
+  box-sizing: border-box;
+  color: white;
+}
+
+.reaction-highlight {
+  background-color: #006ee6;
+  border: 1px solid #006ee6;
+}
+
+.reaction-no-highlight {
+  background-color: #4a4a4a;
+  border: 1px solid #4a4a4a;
+}
+
+.reaction-no-highlight:hover {
+  border: 1px solid white;
+  box-sizing: border-box;
 }
 
 .chat-box {

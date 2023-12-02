@@ -76,6 +76,7 @@ function Channel() {
       setMessages(tempMessages);
     };
     addEmoji = (newMessage) => {
+      console.log(newMessage);
       setMessages((messages) => {
         const tempMessages = [...messages];
         const msgIdx = messages.findIndex(
@@ -108,7 +109,7 @@ function Channel() {
   };
 
   const showMessageOptions = (e) => {
-    e.currentTarget.style.backgroundColor = "lightgrey";
+    e.currentTarget.style.backgroundColor = "#5A5A5A";
     e.currentTarget.children[0].style.display = "inline-block";
   };
 
@@ -118,6 +119,26 @@ function Channel() {
   };
 
   const addEmojiToMessage = (emojiId, messageId) => {
+    const tempMessages = [...messages];
+    const tempMessageIdx = tempMessages.findIndex(
+      (message) => message.id === messageId,
+    );
+    const tempMessage = messages[tempMessageIdx];
+    console.log(tempMessage);
+
+    const messageReaction = tempMessage.reactions[emojiId];
+    const userIdx = messageReaction?.user_ids.findIndex(
+      (user_id) => user_id === user.id,
+    );
+
+    if (messageReaction?.user_ids[userIdx]) {
+      delete messageReaction?.user_ids[userIdx];
+    } else {
+      messageReaction?.user_ids.push(user.id);
+    }
+
+    setMessages(tempMessages);
+
     socket.emit("react", parseInt(emojiId), messageId, channelId, user.id);
   };
 
@@ -165,6 +186,11 @@ function Channel() {
                           reaction.reaction_id,
                           reaction.message_id,
                         )
+                      }
+                      className={
+                        user && reaction.user_ids.includes(user.id)
+                          ? "reaction-highlight reaction"
+                          : "reaction-no-highlight reaction"
                       }
                     >
                       {reaction.reaction}
