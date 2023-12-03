@@ -35,6 +35,11 @@
   color: white;
 }
 
+.emoji-container {
+  /* display: none; */
+  cursor: pointer;
+}
+
 .reaction-highlight {
   background-color: #006ee6;
   border: 1px solid #006ee6;

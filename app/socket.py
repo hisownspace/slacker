@@ -1,4 +1,5 @@
 import os
+import time
 from flask import request
 from flask_socketio import SocketIO, emit, join_room, leave_room, send
 from flask_login import current_user
@@ -30,6 +31,7 @@ def handle_leave(channel_id):
 
 @socketio.on("react")
 def handle_reaction(emoji_id, message_id, channel_id, user_id):
+    # time.sleep(5)
     message = Message.query.get(message_id)
     userReaction = UserReaction.query.get({"message_id": message_id,"user_id":user_id,
                                           "reaction_id":emoji_id})

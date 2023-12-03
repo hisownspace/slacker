@@ -1,11 +1,36 @@
 import { socket } from "../../socket";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { loadChannelMessages } from "../../store/messages";
 import "./Channel.css";
 import { setWorkspaceChannel } from "../../store/channel";
 import { loadAllEmojis } from "../../store/emojis";
+
+const ReactionContainer = memo(
+  ({ emojis, addEmojiToMessage, message, hidden }) => {
+    if (hidden) {
+      return;
+    }
+    return (
+      <div className="emoji-container">
+        {Object.values(emojis).map((emoji) =>
+          emoji.group === "Smileys & Emotion" ? (
+            <span
+              onClick={() => addEmojiToMessage(emoji.id, message.id)}
+              id={`emoji-${emoji.id}`}
+              key={`emoji-${emoji.id}`}
+              className="message-options"
+            >
+              {emoji.unicode}
+            </span>
+          ) : null,
+        )}
+      </div>
+    );
+  },
+  () => true,
+);
 
 function Channel() {
   const dispatch = useDispatch();
@@ -20,6 +45,8 @@ function Channel() {
   );
   const allMessages = useSelector((state) => state.messages);
   const [channel, setChannel] = useState(null);
+  const [hidden, setHidden] = useState(true);
+  const [reactionContainer, setReactionContainer] = useState();
   const emojis = useSelector((state) => state.emojis.allEmojis);
 
   useEffect(() => {
@@ -76,7 +103,6 @@ function Channel() {
       setMessages(tempMessages);
     };
     addEmoji = (newMessage) => {
-      console.log(newMessage);
       setMessages((messages) => {
         const tempMessages = [...messages];
         const msgIdx = messages.findIndex(
@@ -111,31 +137,46 @@ function Channel() {
   const showMessageOptions = (e) => {
     e.currentTarget.style.backgroundColor = "#5A5A5A";
     e.currentTarget.children[0].style.display = "inline-block";
+    setHidden(false);
+    setReactionContainer(e.currentTarget.id);
   };
 
   const hideMessageOptions = (e) => {
     e.currentTarget.style.backgroundColor = "white";
     e.currentTarget.children[0].style.display = "none";
+    setHidden(true);
+    setReactionContainer(null);
   };
 
-  const addEmojiToMessage = (emojiId, messageId) => {
+  const addEmojiToMessage = async (emojiId, messageId) => {
     const tempMessages = [...messages];
     const tempMessageIdx = tempMessages.findIndex(
       (message) => message.id === messageId,
     );
-    const tempMessage = messages[tempMessageIdx];
+    const tempMessage = tempMessages[tempMessageIdx];
 
     const messageReaction = tempMessage.reactions[emojiId];
     const userIdx = messageReaction?.user_ids.findIndex(
       (user_id) => user_id === user.id,
     );
 
-    if (messageReaction && messageReaction.user_ids[userIdx]) {
+    if (messageReaction && messageReaction.user_ids.includes(user.id)) {
       delete messageReaction.user_ids[userIdx];
       messageReaction.quantity -= 1;
+      if (messageReaction.quantity === 0) {
+        delete tempMessage.reactions[emojiId];
+      }
     } else if (messageReaction) {
       messageReaction.user_ids.push(user.id);
       messageReaction.quantity += 1;
+    } else {
+      tempMessage.reactions[emojiId] = {
+        message_id: messageId,
+        quantity: 1,
+        reaction: emojis[emojiId].unicode,
+        rection_id: emojis[emojiId].id,
+        user_ids: [user.id],
+      };
     }
 
     setMessages(tempMessages);
@@ -172,6 +213,14 @@ function Channel() {
                   {emojis[44].unicode}
                 </span>
               </div>
+              {reactionContainer === `message-${message.id}` && !hidden ? (
+                <ReactionContainer
+                  emojis={emojis}
+                  addEmojiToMessage={addEmojiToMessage}
+                  message={message}
+                  hidden={hidden}
+                />
+              ) : null}
               <div>
                 <p>
                   <span className="message-user">{message.user} </span>
