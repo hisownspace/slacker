@@ -14,14 +14,33 @@ const ReactionContainer = memo(
     }
     return (
       <div className="emoji-container">
-        {Object.values(emojis).map((emoji) => (
-          <span
-            onClick={() => addEmojiToMessage(emoji.id, message.id)}
-            id={`emoji-${emoji.id}`}
-            key={`emoji-${emoji.id}`}
-            className="message-options"
-          >
-            {emoji.unicode}
+        {Object.values(emojis).map((emoji, idx) => (
+          <span>
+            {idx == 0 ||
+            (idx + 1 < Object.values(emojis).length &&
+              Object.values(emojis)[idx].group !==
+                Object.values(emojis)[idx - 1].group) ? (
+              <>
+                <div className="emoji-group">{emoji.group}</div>
+                <span
+                  onClick={() => addEmojiToMessage(emoji.id, message.id)}
+                  id={`emoji-${emoji.id}`}
+                  key={`emoji-${emoji.id}`}
+                  className="message-options"
+                >
+                  {emoji.unicode}
+                </span>
+              </>
+            ) : (
+              <span
+                onClick={() => addEmojiToMessage(emoji.id, message.id)}
+                id={`emoji-${emoji.id}`}
+                key={`emoji-${emoji.id}`}
+                className="message-options"
+              >
+                {emoji.unicode}
+              </span>
+            )}
           </span>
         ))}
       </div>

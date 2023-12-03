@@ -39,17 +39,42 @@
 .emoji-container {
   position: absolute;
   cursor: pointer;
-  overflow-y: scroll;
+  overflow-y: hidden;
   width: 231px;
   height: 150px;
   right: 63px;
-  top: -190px;
+  top: -172px;
   z-index: 999;
   border: 1px solid black;
-  border-right: none;
-  border-radius: 15px;
-  padding: 15px;
+  /* border-right: none; */
+  border-radius: 5px 5px 5px 5px;
+  padding: 0 0 5px 5px;
   background-color: grey;
+}
+
+.emoji-container:hover {
+  overflow-y: scroll;
+}
+
+.emoji-container::-webkit-scrollbar {
+  width: 10px;
+  height: 20px;
+}
+.emoji-container::-webkit-scrollbar-track {
+  /* background: white; */
+  padding: 3px;
+  border-radius: 15px;
+}
+
+.emoji-container::-webkit-scrollbar-thumb {
+  background: lightgrey;
+  border-radius: 5px;
+  width: 3px;
+}
+
+.emoji-group {
+  color: white;
+  margin: 7px 0 7px 30px;
 }
 
 .reaction-highlight {
