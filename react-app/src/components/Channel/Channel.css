@@ -7,7 +7,8 @@
 }
 
 .message-options {
-  display: inline;
+  display: inline-block;
+  width: 24px;
 }
 
 .channel-message {
@@ -36,8 +37,19 @@
 }
 
 .emoji-container {
-  /* display: none; */
+  position: absolute;
   cursor: pointer;
+  overflow-y: scroll;
+  width: 231px;
+  height: 150px;
+  right: 63px;
+  top: -190px;
+  z-index: 999;
+  border: 1px solid black;
+  border-right: none;
+  border-radius: 15px;
+  padding: 15px;
+  background-color: grey;
 }
 
 .reaction-highlight {

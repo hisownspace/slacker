@@ -14,18 +14,16 @@ const ReactionContainer = memo(
     }
     return (
       <div className="emoji-container">
-        {Object.values(emojis).map((emoji) =>
-          emoji.group === "Smileys & Emotion" ? (
-            <span
-              onClick={() => addEmojiToMessage(emoji.id, message.id)}
-              id={`emoji-${emoji.id}`}
-              key={`emoji-${emoji.id}`}
-              className="message-options"
-            >
-              {emoji.unicode}
-            </span>
-          ) : null,
-        )}
+        {Object.values(emojis).map((emoji) => (
+          <span
+            onClick={() => addEmojiToMessage(emoji.id, message.id)}
+            id={`emoji-${emoji.id}`}
+            key={`emoji-${emoji.id}`}
+            className="message-options"
+          >
+            {emoji.unicode}
+          </span>
+        ))}
       </div>
     );
   },
@@ -45,7 +43,7 @@ function Channel() {
   );
   const allMessages = useSelector((state) => state.messages);
   const [channel, setChannel] = useState(null);
-  const [hidden, setHidden] = useState(true);
+  const [hidden, setHidden] = useState(false);
   const [reactionContainer, setReactionContainer] = useState();
   const emojis = useSelector((state) => state.emojis.allEmojis);
 
@@ -137,15 +135,12 @@ function Channel() {
   const showMessageOptions = (e) => {
     e.currentTarget.style.backgroundColor = "#5A5A5A";
     e.currentTarget.children[0].style.display = "inline-block";
-    setHidden(false);
-    setReactionContainer(e.currentTarget.id);
+    // setHidden(false);
   };
 
   const hideMessageOptions = (e) => {
     e.currentTarget.style.backgroundColor = "white";
     e.currentTarget.children[0].style.display = "none";
-    setHidden(true);
-    setReactionContainer(null);
   };
 
   const addEmojiToMessage = async (emojiId, messageId) => {
@@ -180,8 +175,17 @@ function Channel() {
     }
 
     setMessages(tempMessages);
-
+    setReactionContainer(null);
     socket.emit("react", parseInt(emojiId), messageId, channelId, user.id);
+  };
+
+  const showEmojis = (e) => {
+    // setHidden((hidden) => !hidden);
+    if (reactionContainer === e.currentTarget.parentNode.parentNode.id) {
+      setReactionContainer(null);
+    } else {
+      setReactionContainer(e.currentTarget.parentNode.parentNode.id);
+    }
   };
 
   return (
@@ -212,6 +216,7 @@ function Channel() {
                 >
                   {emojis[44].unicode}
                 </span>
+                <span onClick={showEmojis}>+</span>
               </div>
               {reactionContainer === `message-${message.id}` && !hidden ? (
                 <ReactionContainer
