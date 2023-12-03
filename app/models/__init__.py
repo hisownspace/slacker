@@ -5,5 +5,5 @@ from app.models.Channel import Channel
 from app.models.Group import Group
 from app.models.File import File
 from app.models.UserReaction import UserReaction
-from app.models.Reaction import Reaction
+from app.models.Reaction import Reaction, ReactionGroup, ReactionSubgroup
 from app.models.Workspace import Workspace

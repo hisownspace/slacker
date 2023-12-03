@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.models import db
 
 
@@ -9,6 +10,9 @@ class UserReaction(db.Model):
                           nullable=False, primary_key=True)
   message_id = db.Column(db.Integer, db.ForeignKey("messages.id"),
                          nullable=True, primary_key=True)
+  created_at = db.Column(db.DateTime, default=datetime.now)
+  
+
   __tableargs__ = db.UniqueConstraint('user_id', 'reaction_id', 'message_id')
   # group_message_id = db.Column(db.Integer, db. ForeignKey("group_messages.id"), nullable=True)
 
@@ -22,5 +26,6 @@ class UserReaction(db.Model):
       "user_id": self.user_id,
       "reaction_id": self.reaction_id,
       "message_id": self.message_id,
-      "reaction": self.reaction.unicode
+      "reaction": self.reaction.unicode,
+      "created_at": self.created_at.isoformat()
     }

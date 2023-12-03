@@ -1,5 +1,5 @@
 from sqlalchemy.sql import text
-from app.models import db, Reaction, production, SCHEMA
+from app.models import db, Reaction, ReactionGroup, ReactionSubgroup, production, SCHEMA
 
 
 def seed_reactions(**kwargs):
@@ -11,11 +11,15 @@ def seed_reactions(**kwargs):
     subgroup = None
     unicode = None
     description = None
+    group = None
     for line in lines:
       if line.startswith("# group"):
-        group = line.split(": ")[-1][:-1]
+        group_name = line.split(": ")[-1][:-1]
+        group = ReactionGroup(group_name=group_name)
       if line.startswith("# subgroup"):
-        subgroup = line.split(": ")[-1][:-1]
+        subgroup_name = line.split(": ")[-1][:-1]
+        subgroup = ReactionSubgroup(subgroup_name=subgroup_name)
+        subgroup.group = group
       if not line.startswith("#") and line != "\n" and line != "":
         description = ' '.join(line.split("#")[-1][:-1].split(" ")[3:])
         data_string = ' '.join(line.split("#")[-1][:-1].split(" "))
@@ -25,7 +29,6 @@ def seed_reactions(**kwargs):
           reaction = {
                         "unicode": unicode,
                         "description": description,
-                        "group": group,
                         "subgroup": subgroup,
                         "emoji": True
                       }
@@ -40,8 +43,12 @@ def seed_reactions(**kwargs):
 def undo_reactions():
   if production:
     db.execute(f"TRUNCATE table {SCHEMA}.reactions RESTART IDENTITY CASCADE;")
+    db.execute(f"TRUNCATE table {SCHEMA}.reaction_subgroups RESTART IDENTITY CASCADE;")
+    db.execute(f"TRUNCATE table {SCHEMA}.reaction_groups RESTART IDENTITY CASCADE;")
   else:
     db.session.execute(text("DELETE FROM reactions;"))
+    db.session.execute(text("DELETE FROM reaction_groups;"))
+    db.session.execute(text("DELETE FROM reaction_subgroups;"))
   
   db.session.commit()
   
