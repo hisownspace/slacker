@@ -25,7 +25,7 @@
   height: 100vh;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 25vw;
+  max-width: 200vw;
 }
 
 .sidebar-main > ul,
@@ -35,10 +35,17 @@ h1 {
 }
 
 .resize-handle {
-  width: 1px;
-  margin-right: 3px;
-  border-right: 1px solid black;
+  width: 20px;
   cursor: col-resize;
-  background-color: grey;
-  box-sizing: border-box;
+  background: linear-gradient(lightgrey, lightgrey) no-repeat center/1px 100%;
+}
+
+.resize-handle-selected {
+  width: 20px;
+  background: linear-gradient(#44acfd, #44acfd) no-repeat center/3px 100%;
+}
+
+.sidebar-workspace-title {
+  margin: 25px;
+  font-size: 20px;
 }

@@ -20,9 +20,9 @@ function Channels({
     (state) => state.workspaces.currentWorkspace,
   );
   const prevChannels = useSelector((state) => state.channel.userChannels);
-  const user = useSelector((state) => state.user);
+  // const user = useSelector((state) => state.user);
   const [currChannels, setCurrChannels] = useState([]);
-  const userChannels = useSelector((state) => state.channel.userChannels);
+  // const userChannels = useSelector((state) => state.channel.userChannels);
   const userWorkspaces = useSelector(
     (state) => state.workspaces.userWorkspaces,
   );
@@ -32,7 +32,6 @@ function Channels({
 
   useEffect(() => {
     const prevChannelId = prevChannels[workspaceId];
-    console.log(currWorkspace);
     if (prevChannelId) {
       history.push(`/client/channels/${prevChannelId}`);
     } else if (currWorkspace?.channels) {
@@ -69,6 +68,7 @@ function Channels({
     <div className="sidebar-container" onMouseMove={moveBorder}>
       <Workspaces />
       <div className="sidebar-main">
+        <div className="sidebar-workspace-title">{currWorkspace.name}</div>
         {currChannels?.map((channel) => (
           <ul key={channel.id}>
             <Link to={`/client/channels/${channel?.id}`}>{channel?.name}</Link>

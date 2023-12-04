@@ -1,7 +1,20 @@
 .profile-dropdown {
   position: absolute;
+  top: 75px;
+  right: 5px;
 }
 
 .hidden {
   display: none;
+}
+
+.navbar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  border-bottom: 1px solid lightgrey;
+}
+
+.profile-button {
+  margin-right: 25px;
 }

@@ -4,4 +4,20 @@
   object-fit: cover;
   object-position: left;
   cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: -4px;
+}
+
+.workspace-button {
+  border: 1px solid white;
+  padding: 2px;
+}
+
+.workspace-button:hover {
+  border: 1px solid grey;
+  border-radius: 5px;
+}
+
+.workspaces {
+  margin-right: -7px;
 }

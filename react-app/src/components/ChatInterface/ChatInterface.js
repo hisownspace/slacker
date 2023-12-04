@@ -18,19 +18,23 @@ export default function ChatInterface(isLoaded) {
     tracking: false,
     startWidth: null,
     startCursorScreenX: null,
-    handleWidth: 10,
+    handleWidth: 25,
     resizeTarget: null,
     parentElement: null,
   });
 
   useEffect(() => {
+    let handle = document.querySelector(".resize-handle");
+    if (!handle) {
+      handle = document.querySelector(".resize-handle-selected");
+    }
     if (resizeData.atEdge) {
-      document.querySelector(".resize-handle").style.cursor = "e-resize";
+      handle.style.cursor = "e-resize";
       if (resizeData.tracking) {
         document.body.style.cursor = "e-resize";
       }
     } else {
-      document.querySelector(".resize-handle").style.cursor = "col-resize";
+      handle.style.cursor = "col-resize";
       if (resizeData.tracking) {
         document.body.style.cursor = "col-resize";
       }
@@ -40,28 +44,38 @@ export default function ChatInterface(isLoaded) {
   const styleBorder = (e) => {
     const handleElement = e.currentTarget;
     // if (resizeData?.tracking) {
-    handleElement.style.borderRight = "3px solid #44ACFD";
-    handleElement.style.marginRight = "1px";
+    // handleElement.style.borderRight = "3px solid #44ACFD";
+    // handleElement.style.marginRight = "1px";
+    handleElement.classList.remove("resize-handle");
+    handleElement.classList.add("resize-handle-selected");
     // }
   };
 
   const unstyleBorder = (e) => {
     const handleElement = e.currentTarget;
     if (!resizeData?.tracking) {
-      handleElement.style.borderRight = "1px solid lightgrey";
-      handleElement.style.marginRight = "3px";
+      // handleElement.style.borderRight = "1px solid lightgrey";
+      // handleElement.style.marginRight = "3px";
+      handleElement.classList.add("resize-handle");
+      handleElement.classList.remove("resize-handle-selected");
     }
   };
 
   const grabBorder = (e) => {
+    document.body.classList.add("no-select");
     if (resizeData.atEdge) {
       document.body.style.cursor = "e-resize";
     } else {
       document.body.style.cursor = "col-resize";
     }
 
-    const handleElement = document.querySelector(".resize-handle");
-    handleElement.style.borderRight = "3px solid #44ACF";
+    let handleElement = document.querySelector(".resize-handle");
+    if (!handleElement) {
+      handleElement = document.querySelector(".resize-handle-selected");
+    }
+    // handleElement.style.borderRight = "3px solid #44ACF";
+    handleElement.classList.remove("resize-handle");
+    handleElement.classList.add("resize-handle-selected");
 
     const targetSelector = handleElement.getAttribute("data-target");
 
@@ -81,38 +95,38 @@ export default function ChatInterface(isLoaded) {
     });
   };
 
-  const releaseBorder = (e) => {
-    // if (resizeData?.tracking) {
-    const handleElement = document.querySelector(".resize-handle");
-    handleElement.style.borderRight = "1px solid lightgrey";
-    handleElement.style.marginRight = "3px";
+  const releaseBorder = () => {
     document.body.style.cursor = "default";
-    setResizeData({ ...resizeData, tracking: false });
-    // }
+    document.body.classList.remove("no-select");
+    let handleElement = document.querySelector(".resize-handle");
+    if (!handleElement) {
+      handleElement = document.querySelector(".resize-handle-selected");
+    }
+    if (handleElement) {
+      handleElement.classList.add("resize-handle");
+      handleElement.classList.remove("resize-handle-selected");
+      setResizeData({ ...resizeData, tracking: false });
+    }
   };
 
   const moveBorder = (e) => {
-    debounce((e) => {
-      const tempResizeData = { ...resizeData };
-      if (tempResizeData.tracking) {
-        const cursorScreenXDelta =
-          e.screenX - tempResizeData.startCursorScreenX;
-        const newWidth = Math.min(
-          tempResizeData.startWidth + cursorScreenXDelta,
-        );
-        if (newWidth <= 50 && tempResizeData) {
-          tempResizeData.resizeTarget.style.width = "0px";
-          tempResizeData.atEdge = true;
-        } else {
-          tempResizeData.resizeTarget.style.width = `${newWidth}px`;
-          tempResizeData.atEdge = false;
-        }
+    const tempResizeData = { ...resizeData };
+    if (tempResizeData.tracking) {
+      const cursorScreenXDelta = e.screenX - tempResizeData.startCursorScreenX;
+      const newWidth =
+        (tempResizeData.startWidth + (cursorScreenXDelta - 100)) * 2.5 + 45;
+      if (newWidth <= 50) {
+        tempResizeData.resizeTarget.style.width = "0px";
+        tempResizeData.atEdge = true;
+      } else {
+        tempResizeData.resizeTarget.style.width = `${newWidth}px`;
+        tempResizeData.atEdge = false;
       }
-      window.addEventListener("mouseup", (e) => {
-        releaseBorder(e);
-      });
-      setResizeData(tempResizeData);
-    })(e);
+    }
+    window.addEventListener("mouseup", (e) => {
+      releaseBorder(e);
+    });
+    setResizeData(tempResizeData);
   };
   return (
     <div className="container" onMouseMove={moveBorder}>

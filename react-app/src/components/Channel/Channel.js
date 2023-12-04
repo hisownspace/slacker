@@ -2,21 +2,21 @@ import { socket } from "../../socket";
 import { useState, useEffect, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { loadChannelMessages } from "../../store/messages";
+import {
+  loadChannelMessages,
+  clearChannelMessages,
+} from "../../store/messages";
 import "./Channel.css";
 import { setWorkspaceChannel } from "../../store/channel";
 import { loadAllEmojis } from "../../store/emojis";
 
 const ReactionContainer = memo(
-  ({ emojis, addEmojiToMessage, message, hidden }) => {
-    if (hidden) {
-      return;
-    }
+  ({ emojis, addEmojiToMessage, message }) => {
     return (
       <div className="emoji-container">
         {Object.values(emojis).map((emoji, idx) => (
           <span key={`emoji-${emoji.id}`}>
-            {idx == 0 ||
+            {idx === 0 ||
             (idx + 1 < Object.values(emojis).length &&
               Object.values(emojis)[idx].group !==
                 Object.values(emojis)[idx - 1].group) ? (
@@ -60,14 +60,12 @@ function Channel() {
   );
   const allMessages = useSelector((state) => state.messages);
   const [channel, setChannel] = useState(null);
-  const [hidden, setHidden] = useState(false);
   const [reactionContainer, setReactionContainer] = useState();
   const emojis = useSelector((state) => state.emojis.allEmojis);
 
   useEffect(() => {
     (async () => {
       await dispatch(loadAllEmojis());
-      await dispatch(loadChannelMessages(channelId));
       if (
         workspaceId &&
         channelId &&
@@ -76,7 +74,20 @@ function Channel() {
         dispatch(setWorkspaceChannel(workspaceId, channelId));
       }
     })();
-  }, [dispatch, channelId, workspaceId]);
+  }, [dispatch, channelId, workspaceId, workspace]);
+
+  useEffect(() => {
+    (async () => {
+      await dispatch(loadChannelMessages(channelId));
+    })();
+    return () => {
+      dispatch(clearChannelMessages());
+    };
+  }, [dispatch, channelId]);
+
+  useEffect(() => {
+    setMessages(allMessages);
+  }, [allMessages]);
 
   useEffect(() => {
     console.log("joining channel", channelId);
@@ -97,41 +108,28 @@ function Channel() {
 
     setChannel(channels[channelId]);
     socket.emit("join", channelId);
+    socket.on("react", addEmoji);
 
     return () => {
       socket.emit("leave", channelId);
       socket.off("chat");
+      socket.off("react", addEmoji);
     };
   }, [channelId, channels]);
 
-  useEffect(() => {
-    setMessages(allMessages);
-  }, [allMessages]);
-
-  useEffect(() => {
-    let addEmoji = (newMessage) => {
-      const tempMessages = [...messages];
-      const msgIdx = tempMessages.findIndex(
-        (message) => message.id == newMessage.id,
-      );
-      tempMessages[msgIdx] = { ...newMessage };
-      setMessages(tempMessages);
-    };
-    addEmoji = (newMessage) => {
-      setMessages((messages) => {
-        const tempMessages = [...messages];
-        const msgIdx = messages.findIndex(
-          (message) => message.id == newMessage.id,
-        );
-        tempMessages[msgIdx] = { ...newMessage };
-        return tempMessages;
-      });
-    };
-    socket.on("react", addEmoji);
-    return () => {
-      socket.off("react", addEmoji);
-    };
-  }, [socket]);
+  // useEffect(() => {
+  //   socket.on("react", addEmoji);
+  //   return () => {
+  //     socket.off("react", addEmoji);
+  //   };
+  // }, [socket]);
+  //
+  // useEffect(() => {
+  //   return () => {
+  //     setMessages([]);
+  //     dispatch(clearChannelMessages());
+  //   };
+  // }, [channelId]);
 
   const updateChatInput = (e) => {
     setChatInput(e.target.value);
@@ -149,10 +147,20 @@ function Channel() {
     setChatInput("");
   };
 
+  const addEmoji = (newMessage) => {
+    setMessages((messages) => {
+      const tempMessages = [...messages];
+      const msgIdx = messages.findIndex(
+        (message) => message.id === newMessage.id,
+      );
+      tempMessages[msgIdx] = { ...newMessage };
+      return tempMessages;
+    });
+  };
+
   const showMessageOptions = (e) => {
     e.currentTarget.style.backgroundColor = "#5A5A5A";
     e.currentTarget.children[0].style.display = "inline-block";
-    // setHidden(false);
   };
 
   const hideMessageOptions = (e) => {
@@ -198,12 +206,18 @@ function Channel() {
   };
 
   const showEmojis = (e) => {
-    // setHidden((hidden) => !hidden);
+    e.stopPropagation();
     if (reactionContainer === e.currentTarget.parentNode.parentNode.id) {
       setReactionContainer(null);
     } else {
       setReactionContainer(e.currentTarget.parentNode.parentNode.id);
+      document.addEventListener("click", hideEmojis);
     }
+  };
+
+  const hideEmojis = () => {
+    setReactionContainer(null);
+    document.removeEventListener("click", hideEmojis);
   };
 
   return (
@@ -211,7 +225,7 @@ function Channel() {
       <h1>{channel?.name}</h1>
       <div className="chat-box">
         <div>
-          {messages.map((message, idx) => (
+          {messages?.map((message, idx) => (
             <div
               className="channel-message"
               key={idx}
@@ -222,26 +236,25 @@ function Channel() {
               <div className="emoji-box">
                 <span
                   onClick={() => addEmojiToMessage(emojis[49].id, message.id)}
-                  id={`emoji-${emojis[49].id}`}
+                  id={`emoji-${emojis[49]?.id}`}
                   className="message-options"
                 >
-                  {emojis[49].unicode}
+                  {emojis[49]?.unicode}
                 </span>
                 <span
                   onClick={() => addEmojiToMessage(emojis[44].id, message.id)}
-                  id={`emoji-${emojis[44].id}`}
+                  id={`emoji-${emojis[44]?.id}`}
                   className="message-options"
                 >
-                  {emojis[44].unicode}
+                  {emojis[44]?.unicode}
                 </span>
                 <span onClick={showEmojis}>+</span>
               </div>
-              {reactionContainer === `message-${message.id}` && !hidden ? (
+              {reactionContainer === `message-${message.id}` ? (
                 <ReactionContainer
                   emojis={emojis}
                   addEmojiToMessage={addEmojiToMessage}
                   message={message}
-                  hidden={hidden}
                 />
               ) : null}
               <div>
