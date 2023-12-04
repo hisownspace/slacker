@@ -8,7 +8,7 @@ import {
 } from "../../store/messages";
 import "./Channel.css";
 import { setWorkspaceChannel } from "../../store/channel";
-import { loadAllEmojis } from "../../store/emojis";
+import { loadAllEmojis, loadUserFavorites } from "../../store/emojis";
 
 const ReactionContainer = memo(
   ({ emojis, addEmojiToMessage, message }) => {
@@ -52,6 +52,7 @@ function Channel() {
   let { channelId } = useParams();
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
+  const [favorites, setFavorites] = useState([1, 2, 3]);
   const user = useSelector((state) => state.session.user);
   const channels = useSelector((state) => state.channel.allChannels);
   const workspace = useSelector((state) => state.workspaces.currentWorkspace);
@@ -59,6 +60,7 @@ function Channel() {
     (state) => state.workspaces.currentWorkspace.id,
   );
   const allMessages = useSelector((state) => state.messages);
+  const allFavorites = useSelector((state) => state.emojis.favoriteEmojis);
   const [channel, setChannel] = useState(null);
   const [reactionContainer, setReactionContainer] = useState();
   const emojis = useSelector((state) => state.emojis.allEmojis);
@@ -66,6 +68,7 @@ function Channel() {
   useEffect(() => {
     (async () => {
       await dispatch(loadAllEmojis());
+      await dispatch(loadUserFavorites());
       if (
         workspaceId &&
         channelId &&
@@ -88,6 +91,16 @@ function Channel() {
   useEffect(() => {
     setMessages(allMessages);
   }, [allMessages]);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     await dispatch(loadUserFavorites());
+  //   })();
+  // }, [messages]);
+
+  useEffect(() => {
+    setFavorites(allFavorites);
+  }, [allFavorites]);
 
   useEffect(() => {
     console.log("joining channel", channelId);
@@ -159,12 +172,10 @@ function Channel() {
   };
 
   const showMessageOptions = (e) => {
-    e.currentTarget.style.backgroundColor = "#5A5A5A";
     e.currentTarget.children[0].style.display = "inline-block";
   };
 
   const hideMessageOptions = (e) => {
-    e.currentTarget.style.backgroundColor = "white";
     e.currentTarget.children[0].style.display = "none";
   };
 
@@ -234,20 +245,18 @@ function Channel() {
               onMouseLeave={hideMessageOptions}
             >
               <div className="emoji-box">
-                <span
-                  onClick={() => addEmojiToMessage(emojis[49].id, message.id)}
-                  id={`emoji-${emojis[49]?.id}`}
-                  className="message-options"
-                >
-                  {emojis[49]?.unicode}
-                </span>
-                <span
-                  onClick={() => addEmojiToMessage(emojis[44].id, message.id)}
-                  id={`emoji-${emojis[44]?.id}`}
-                  className="message-options"
-                >
-                  {emojis[44]?.unicode}
-                </span>
+                {favorites.map((reaction_id) => (
+                  <span
+                    onClick={() =>
+                      addEmojiToMessage(emojis[reaction_id].id, message.id)
+                    }
+                    id={`emoji-${emojis[reaction_id]?.id}`}
+                    key={`emoji-${emojis[reaction_id]?.id}`}
+                    className="message-options"
+                  >
+                    {emojis[reaction_id]?.unicode}
+                  </span>
+                ))}
                 <span onClick={showEmojis}>+</span>
               </div>
               {reactionContainer === `message-${message.id}` ? (
@@ -258,40 +267,58 @@ function Channel() {
                 />
               ) : null}
               <div>
-                <p>
-                  <span className="message-user">{message.user} </span>
-                  <span className="time-stamp">{message.timestamp}</span>
-                </p>
-                <div key={idx}>{message.content}</div>
-                <ul>
-                  {Object.values(message.reactions)
-                    .sort((a, b) =>
-                      a.created_at > b.created_at
-                        ? 1
-                        : a.created_at < b.created_at
-                        ? -1
-                        : 0,
-                    )
-                    .map((reaction, idx) => (
-                      <li
-                        key={`message-${reaction.message_id}-${reaction.id}-${idx}`}
-                        onClick={() =>
-                          addEmojiToMessage(
-                            reaction.reaction_id,
-                            reaction.message_id,
-                          )
-                        }
-                        className={
-                          user && reaction.user_ids.includes(user.id)
-                            ? "reaction-highlight reaction"
-                            : "reaction-no-highlight reaction"
-                        }
-                      >
-                        {reaction.reaction}
-                        {reaction.quantity}
-                      </li>
-                    ))}
-                </ul>
+                <div className="message-container">
+                  <div key={idx} className="chat-message">
+                    {message.new_day ? (
+                      <div className="new-day-container">
+                        <span>{message.new_day}</span>
+                      </div>
+                    ) : null}
+                    <div
+                      className="message-content"
+                      id={`message-content-${message.id}`}
+                    >
+                      {message.content}
+                    </div>
+                    <div className="message-user">
+                      <span>
+                        <span style={{ color: message.user }}>
+                          {message.user}
+                        </span>
+                        <span className="timestamp">{message.timestamp}</span>
+                      </span>
+                    </div>
+                    <ul>
+                      {Object.values(message.reactions)
+                        .sort((a, b) =>
+                          a.created_at > b.created_at
+                            ? 1
+                            : a.created_at < b.created_at
+                            ? -1
+                            : 0,
+                        )
+                        .map((reaction, idx) => (
+                          <li
+                            key={`message-${reaction.message_id}-${reaction.id}-${idx}`}
+                            onClick={() =>
+                              addEmojiToMessage(
+                                reaction.reaction_id,
+                                reaction.message_id,
+                              )
+                            }
+                            className={
+                              user && reaction.user_ids.includes(user.id)
+                                ? "reaction-highlight reaction"
+                                : "reaction-no-highlight reaction"
+                            }
+                          >
+                            {reaction.reaction}
+                            {reaction.quantity}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           ))}

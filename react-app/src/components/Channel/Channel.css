@@ -16,6 +16,10 @@
   width: 100%;
 }
 
+.channel-message:hover {
+  background-color: #5a5a5a;
+}
+
 .emoji-box {
   display: none;
   position: absolute;
@@ -98,4 +102,33 @@
 
 .chat-form {
   margin-top: 50px;
+}
+
+.chat-room-container {
+  margin-bottom: 25px;
+}
+
+.message-user {
+  /* margin-right: 0; */
+  font-size: 1em;
+  /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
+  line-height: 0;
+  width: 100%;
+  text-align: right;
+  margin: 0 20px 10px 0;
+  padding-right: 20px;
+}
+
+.chat-message {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content {
+  width: 100%;
+  display: block;
+  font-size: 1.25em;
+  padding: 20px 20px 20px 15px;
+  box-sizing: border-box;
+  /* background: #242424; */
 }
