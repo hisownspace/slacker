@@ -2,6 +2,7 @@ import { socket } from "../../socket";
 import { useState, useEffect, memo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import addReaction from "../../assets/add_reaction.png";
 import {
   loadChannelMessages,
   clearChannelMessages,
@@ -290,7 +291,9 @@ function Channel() {
                     {emojis[reaction_id]?.unicode}
                   </span>
                 ))}
-                <span onClick={showEmojis}>+</span>
+                <span className="add-reaction-image" onClick={showEmojis}>
+                  <img src={addReaction} />
+                </span>
               </div>
               {reactionContainer === `message-${message.id}` ? (
                 <ReactionContainer
