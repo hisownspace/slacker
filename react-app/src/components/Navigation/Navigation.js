@@ -11,7 +11,7 @@ function Navigation({ isLoaded }) {
     <div className="navbar">
       <div></div>
       <div className="profile-button">
-        <ul>
+        <ul className="profile-button-items">
           <li>
             <NavLink exact to="/">
               Home

@@ -1,5 +1,5 @@
 import { socket } from "../../socket";
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
@@ -64,6 +64,7 @@ function Channel() {
   const [channel, setChannel] = useState(null);
   const [reactionContainer, setReactionContainer] = useState();
   const emojis = useSelector((state) => state.emojis.allEmojis);
+  const anchorRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -92,12 +93,6 @@ function Channel() {
     setMessages(allMessages);
   }, [allMessages]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await dispatch(loadUserFavorites());
-  //   })();
-  // }, [messages]);
-
   useEffect(() => {
     setFavorites(allFavorites);
   }, [allFavorites]);
@@ -106,7 +101,7 @@ function Channel() {
     console.log("joining channel", channelId);
 
     socket.on("chat", (chat) => {
-      setMessages((messages) => [...messages, chat]);
+      setMessages((messages) => [chat, ...messages]);
     });
 
     socket.on("connect", () => {
@@ -233,10 +228,18 @@ function Channel() {
 
   return (
     <div className="channel-chat">
-      <h1>{channel?.name}</h1>
+      <h2>{channel?.name}</h2>
       <div className="chat-box">
-        <div>
-          {messages?.map((message, idx) => (
+        {messages
+          .sort((a, b) =>
+            a.created_at > b.created_at
+              ? 1
+              : a.created_at < b.created_at
+              ? -1
+              : 0,
+          )
+          .reverse()
+          .map((message, idx) => (
             <div
               className="channel-message"
               key={idx}
@@ -268,6 +271,12 @@ function Channel() {
               ) : null}
               <div>
                 <div className="message-container">
+                  <div className="message-user">
+                    <span>
+                      <span className="message-user-name">{message.user}</span>
+                      <span className="timestamp">{message.timestamp}</span>
+                    </span>
+                  </div>
                   <div key={idx} className="chat-message">
                     {message.new_day ? (
                       <div className="new-day-container">
@@ -280,15 +289,7 @@ function Channel() {
                     >
                       {message.content}
                     </div>
-                    <div className="message-user">
-                      <span>
-                        <span style={{ color: message.user }}>
-                          {message.user}
-                        </span>
-                        <span className="timestamp">{message.timestamp}</span>
-                      </span>
-                    </div>
-                    <ul>
+                    <ul className="message-emojis">
                       {Object.values(message.reactions)
                         .sort((a, b) =>
                           a.created_at > b.created_at
@@ -322,11 +323,13 @@ function Channel() {
               </div>
             </div>
           ))}
-          <form className="chat-form" onSubmit={sendChat}>
-            <input value={chatInput} onChange={updateChatInput} />
-            <button type="submit">Send</button>
-          </form>
-        </div>
+        <div ref={anchorRef} id="anchor"></div>
+      </div>
+      <div className="chat-form-container">
+        <form className="chat-form" onSubmit={sendChat}>
+          <input value={chatInput} onChange={updateChatInput} />
+          <button type="submit">Send</button>
+        </form>
       </div>
     </div>
   );

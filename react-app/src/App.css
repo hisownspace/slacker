@@ -1,4 +1,13 @@
 body {
   margin: 0;
+  max-height: 100vh;
   font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  background-color: #1e1e1e;
+  padding-right: 3px;
+}
+
+.content {
+  position: absolute;
+  top: 6.1vh;
 }

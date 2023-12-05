@@ -1,5 +1,8 @@
 .container {
+  height: 95vh;
   display: flex;
+  position: fixed;
+  width: 100%;
 }
 
 .no-select {

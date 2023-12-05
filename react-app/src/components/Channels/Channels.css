@@ -22,14 +22,18 @@
 }
 
 .sidebar-main {
-  height: 100vh;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 200vw;
+  max-width: 100vw;
+  margin-left: 5vw;
 }
 
-.sidebar-main > ul,
-h1 {
+.sidebar-workspace-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.sidebar-main > ul {
   text-overflow: ellipsis;
   overflow: hidden;
 }

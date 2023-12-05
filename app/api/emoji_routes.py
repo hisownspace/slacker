@@ -24,5 +24,4 @@ def get_favorite_reactions():
                 reactions[reaction_id] += 1
             else:
                 reactions[reaction_id] = 1
-    print(reactions)
     return sorted(reactions, key=reactions.get, reverse=True)[:3]
