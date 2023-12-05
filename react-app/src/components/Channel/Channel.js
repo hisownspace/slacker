@@ -11,9 +11,12 @@ import { setWorkspaceChannel } from "../../store/channel";
 import { loadAllEmojis, loadUserFavorites } from "../../store/emojis";
 
 const ReactionContainer = memo(
-  ({ emojis, addEmojiToMessage, message }) => {
+  ({ emojis, addEmojiToMessage, message, emojiBoxAbove }) => {
+    console.log(emojiBoxAbove);
     return (
-      <div className="emoji-container">
+      <div
+        className={emojiBoxAbove ? "emoji-container above" : "emoji-container"}
+      >
         {Object.values(emojis).map((emoji, idx) => (
           <span key={`emoji-${emoji.id}`}>
             {idx === 0 ||
@@ -50,20 +53,24 @@ const ReactionContainer = memo(
 function Channel() {
   const dispatch = useDispatch();
   let { channelId } = useParams();
-  const [messages, setMessages] = useState([]);
-  const [chatInput, setChatInput] = useState("");
-  const [favorites, setFavorites] = useState([1, 2, 3]);
+
   const user = useSelector((state) => state.session.user);
   const channels = useSelector((state) => state.channel.allChannels);
   const workspace = useSelector((state) => state.workspaces.currentWorkspace);
   const workspaceId = useSelector(
     (state) => state.workspaces.currentWorkspace.id,
   );
+  const emojis = useSelector((state) => state.emojis.allEmojis);
   const allMessages = useSelector((state) => state.messages);
   const allFavorites = useSelector((state) => state.emojis.favoriteEmojis);
+
   const [channel, setChannel] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [favorites, setFavorites] = useState([1, 2, 3]);
   const [reactionContainer, setReactionContainer] = useState();
-  const emojis = useSelector((state) => state.emojis.allEmojis);
+  const [emojiBoxAbove, setEmojiBoxAbove] = useState(false);
+
   const anchorRef = useRef(null);
 
   useEffect(() => {
@@ -130,6 +137,7 @@ function Channel() {
   //   return () => {
   //     socket.off("react", addEmoji);
   //   };
+  //   const [emojiBoxAbove, setEmojiBoxAbove] = useState(false);
   // }, [socket]);
   //
   // useEffect(() => {
@@ -167,11 +175,17 @@ function Channel() {
   };
 
   const showMessageOptions = (e) => {
-    e.currentTarget.children[0].style.display = "inline-block";
+    if (!reactionContainer) {
+      e.currentTarget.children[0].style.display = "inline-block";
+      e.currentTarget.style.backgroundColor = "#333333";
+    }
   };
 
   const hideMessageOptions = (e) => {
-    e.currentTarget.children[0].style.display = "none";
+    if (!reactionContainer) {
+      e.currentTarget.children[0].style.display = "none";
+      e.currentTarget.style.backgroundColor = "#1f1f1f";
+    }
   };
 
   const addEmojiToMessage = async (emojiId, messageId) => {
@@ -213,15 +227,31 @@ function Channel() {
 
   const showEmojis = (e) => {
     e.stopPropagation();
+    console.log(e.clientY);
     if (reactionContainer === e.currentTarget.parentNode.parentNode.id) {
       setReactionContainer(null);
     } else {
       setReactionContainer(e.currentTarget.parentNode.parentNode.id);
+      console.log(reactionContainer);
+      if (e.clientY < 300) {
+        setEmojiBoxAbove(false);
+      } else {
+        setEmojiBoxAbove(true);
+      }
       document.addEventListener("click", hideEmojis);
     }
   };
 
   const hideEmojis = () => {
+    const channelMessages = document.querySelectorAll(".channel-message");
+    const emojiBoxes = document.querySelectorAll(".emoji-box");
+    for (let i = 0; i < channelMessages.length; i++) {
+      const box = emojiBoxes[i];
+      const message = channelMessages[i];
+      message.style.backgroundColor = "#1f1f1f";
+      box.style.display = "none";
+    }
+    console.log(channelMessages);
     setReactionContainer(null);
     document.removeEventListener("click", hideEmojis);
   };
@@ -267,6 +297,7 @@ function Channel() {
                   emojis={emojis}
                   addEmojiToMessage={addEmojiToMessage}
                   message={message}
+                  emojiBoxAbove={emojiBoxAbove}
                 />
               ) : null}
               <div>

@@ -24,16 +24,22 @@ h2 {
   width: 100%;
 }
 
-.channel-message:hover {
-  background-color: #333333;
-}
+/* .channel-message:hover { */
+/*   background-color: #333333; */
+/* } */
 
 .emoji-box {
   display: none;
   position: absolute;
-  top: -12px;
+  top: -20px;
   right: 65px;
   cursor: pointer;
+  height: 30px;
+  border-radius: 3px;
+  border: 1px solid #333333;
+  background-color: #1e1e1e;
+  z-index: 9999999;
+  padding: 3px 6px;
 }
 
 .reaction {
@@ -52,14 +58,19 @@ h2 {
   position: absolute;
   cursor: pointer;
   overflow-y: hidden;
+  background-color: #1f1f1f;
   width: 231px;
+  top: 20px;
   height: 150px;
   right: 63px;
-  top: -172px;
   z-index: 999;
   border: 1px solid #333333;
   border-radius: 5px 5px 5px 5px;
   padding: 0 0 5px 5px;
+}
+
+.above {
+  top: -180px;
 }
 
 .emoji-container:hover {
@@ -76,7 +87,7 @@ h2 {
 }
 
 .emoji-container::-webkit-scrollbar-thumb {
-  background: red;
+  background: grey;
   border-radius: 5px;
   width: 3px;
 }
