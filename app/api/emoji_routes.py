@@ -16,12 +16,14 @@ def get_all_emojis():
 
 @emoji_routes.route("/favorites")
 def get_favorite_reactions():
-    my_messages = [message.to_dict() for message in current_user.messages]
+    my_reactions = [message.to_dict() for message in current_user.reactions]
+    # print(my_reactions)
     reactions = {}
-    for message in my_messages:
-        for reaction_id in message["reactions"].keys():
-            if reaction_id in reactions:
-                reactions[reaction_id] += 1
-            else:
-                reactions[reaction_id] = 1
+    for reaction in my_reactions:
+        print(reaction)
+        if reaction["reaction_id"] in reactions:
+            reactions[reaction["reaction_id"]] += 1
+        else:
+            reactions[reaction["reaction_id"]] = 1
+    print(reactions)
     return sorted(reactions, key=reactions.get, reverse=True)[:3]

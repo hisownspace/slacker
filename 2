@@ -13,6 +13,7 @@ import { loadAllEmojis, loadUserFavorites } from "../../store/emojis";
 
 const ReactionContainer = memo(
   ({ emojis, addEmojiToMessage, message, emojiBoxAbove }) => {
+    console.log(emojiBoxAbove);
     return (
       <div
         className={emojiBoxAbove ? "emoji-container above" : "emoji-container"}
@@ -101,15 +102,8 @@ function Channel() {
   }, [allMessages]);
 
   useEffect(() => {
-    if (allFavorites.length >= 3) {
+    if (allFavorites.length) {
       setFavorites(allFavorites);
-    } else if (allFavorites) {
-      setFavorites((x) => {
-        for (let i = 0; i < allFavorites.length; i++) {
-          x[i] = allFavorites[i];
-        }
-        return x;
-      });
     }
   }, [allFavorites, emojis]);
 
@@ -236,10 +230,12 @@ function Channel() {
 
   const showEmojis = (e) => {
     e.stopPropagation();
+    console.log(e.clientY);
     if (reactionContainer === e.currentTarget.parentNode.parentNode.id) {
       setReactionContainer(null);
     } else {
       setReactionContainer(e.currentTarget.parentNode.parentNode.id);
+      console.log(reactionContainer);
       if (e.clientY < 300) {
         setEmojiBoxAbove(false);
       } else {
@@ -258,6 +254,7 @@ function Channel() {
       message.style.backgroundColor = "#1f1f1f";
       box.style.display = "none";
     }
+    console.log(channelMessages);
     setReactionContainer(null);
     document.removeEventListener("click", hideEmojis);
   };
@@ -285,7 +282,7 @@ function Channel() {
             >
               <div className="emoji-box">
                 {favorites.map((reaction_id) =>
-                  reaction_id && emojis[reaction_id] ? (
+                  reaction_id && emojis.length ? (
                     <span
                       onClick={() =>
                         addEmojiToMessage(emojis[reaction_id].id, message.id)

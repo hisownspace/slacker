@@ -6,7 +6,7 @@ class UserReaction(db.Model):
   __tablename__ = "user_reactions"
   
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
-  reaction_id = db.Column(db.String(255), db.ForeignKey("reactions.id"),
+  reaction_id = db.Column(db.Integer, db.ForeignKey("reactions.id"),
                           nullable=False, primary_key=True)
   message_id = db.Column(db.Integer, db.ForeignKey("messages.id"),
                          nullable=True, primary_key=True)
