@@ -24,7 +24,7 @@ function App() {
         <div className="content">
           <Switch>
             <Route path="/client">
-              <ChatInterface isLoaded={isLoaded} />
+              <ChatInterface />
             </Route>
             <Route path="/login">
               <LoginFormPage />

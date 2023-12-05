@@ -1,21 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { debounce } from "lodash";
 import { Route, Switch } from "react-router-dom";
-import Channels from "../Channels";
+import MemoizedChannels from "../Channels";
 import Channel from "../Channel";
 import "./ChatInterface.css";
 
-const selectTarget = (fromElement, selector) => {
-  if (!(fromElement instanceof HTMLElement)) {
-    return null;
-  } else {
-    return fromElement.querySelector(selector);
-  }
-};
+export default function ChatInterface() {
+  const handle = useRef(null);
+  const sidebarMain = useRef(null);
+  const sidebarContainer = useRef(null);
 
-export default function ChatInterface(isLoaded) {
+  // const [tracking, setTracking] = useState(false);
+  const tracking = useRef(false);
   const [resizeData, setResizeData] = useState({
-    tracking: false,
     startWidth: null,
     startCursorScreenX: null,
     handleWidth: 25,
@@ -24,40 +21,30 @@ export default function ChatInterface(isLoaded) {
   });
 
   useEffect(() => {
-    let handle = document.querySelector(".resize-handle");
-    if (!handle) {
-      handle = document.querySelector(".resize-handle-selected");
-    }
     if (resizeData.atEdge) {
-      handle.style.cursor = "e-resize";
-      if (resizeData.tracking) {
+      handle.current.style.cursor = "e-resize";
+      if (tracking.current) {
         document.body.style.cursor = "e-resize";
       }
     } else {
-      handle.style.cursor = "col-resize";
-      if (resizeData.tracking) {
+      handle.current.style.cursor = "col-resize";
+      if (tracking.current) {
         document.body.style.cursor = "col-resize";
       }
     }
-  }, [resizeData.atEdge, resizeData.tracking]);
+  }, [resizeData.atEdge, tracking.current]);
 
   const styleBorder = (e) => {
-    const handleElement = e.currentTarget;
-    // if (resizeData?.tracking) {
-    // handleElement.style.borderRight = "3px solid #44ACFD";
-    // handleElement.style.marginRight = "1px";
-    handleElement.classList.remove("resize-handle");
-    handleElement.classList.add("resize-handle-selected");
-    // }
+    if (handle) {
+      handle.current.classList.remove("resize-handle");
+      handle.current.classList.add("resize-handle-selected");
+    }
   };
 
   const unstyleBorder = (e) => {
-    const handleElement = e.currentTarget;
-    if (!resizeData?.tracking) {
-      // handleElement.style.borderRight = "1px solid lightgrey";
-      // handleElement.style.marginRight = "3px";
-      handleElement.classList.add("resize-handle");
-      handleElement.classList.remove("resize-handle-selected");
+    if (!tracking.current) {
+      handle.current.classList.add("resize-handle");
+      handle.current.classList.remove("resize-handle-selected");
     }
   };
 
@@ -68,77 +55,69 @@ export default function ChatInterface(isLoaded) {
     } else {
       document.body.style.cursor = "col-resize";
     }
-
-    let handleElement = document.querySelector(".resize-handle");
-    if (!handleElement) {
-      handleElement = document.querySelector(".resize-handle-selected");
-    }
-    // handleElement.style.borderRight = "3px solid #44ACF";
-    handleElement.classList.remove("resize-handle");
-    handleElement.classList.add("resize-handle-selected");
-
-    const targetSelector = handleElement.getAttribute("data-target");
-
-    const targetElement = selectTarget(
-      handleElement.parentElement,
-      targetSelector,
-    );
+    handle.current.classList.remove("resize-handle");
+    handle.current.classList.add("resize-handle-selected");
 
     setResizeData({
       ...resizeData,
-      startWidth: targetElement.offsetWidth,
+      startWidth: sidebarMain.current.offsetWidth,
       startCursorScreenX: e.screenX,
-      resizeTarget: targetElement,
-      parentElement: handleElement.parentElement,
-      tracking: true,
+      resizeTarget: sidebarMain.current,
+      parentElement: sidebarContainer.current,
       atEdge: false,
     });
+    tracking.current = true;
   };
 
   const releaseBorder = () => {
     document.body.style.cursor = "default";
     document.body.classList.remove("no-select");
-    let handleElement = document.querySelector(".resize-handle");
-    if (!handleElement) {
-      handleElement = document.querySelector(".resize-handle-selected");
+    if (handle && tracking.current) {
+      handle.current.classList.add("resize-handle");
+      handle.current.classList.remove("resize-handle-selected");
+      const tempData = { ...resizeData };
+      setResizeData(tempData);
     }
-    if (handleElement) {
-      handleElement.classList.add("resize-handle");
-      handleElement.classList.remove("resize-handle-selected");
-      setResizeData({ ...resizeData, tracking: false });
+    unstyleBorder();
+    tracking.current = false;
+  };
+
+  const listenForMouseUp = (e) => {
+    document.removeEventListener("mouseup", listenForMouseUp);
+    if (tracking.current) {
+      tracking.current = false;
+      releaseBorder(e);
     }
   };
 
   const moveBorder = (e) => {
     const tempResizeData = { ...resizeData };
-    if (tempResizeData.tracking) {
+    if (tracking.current) {
       const cursorScreenXDelta = e.screenX - tempResizeData.startCursorScreenX;
-      const newWidth =
-        (tempResizeData.startWidth + (cursorScreenXDelta - 100)) * 2.5 + 45;
-      if (newWidth <= 50) {
+      const newWidth = (tempResizeData.startWidth + cursorScreenXDelta) * 1.55;
+      if (newWidth <= 40) {
         tempResizeData.resizeTarget.style.width = "0px";
         tempResizeData.atEdge = true;
       } else {
         tempResizeData.resizeTarget.style.width = `${newWidth}px`;
         tempResizeData.atEdge = false;
       }
+      document.addEventListener("mouseup", listenForMouseUp);
+      setResizeData(tempResizeData);
     }
-    window.addEventListener("mouseup", (e) => {
-      releaseBorder(e);
-    });
-    setResizeData(tempResizeData);
   };
 
   return (
-    <div className="container">
-      <Channels
-      // moveBorder={moveBorder}
-      // grabBorder={grabBorder}
-      // releaseBorder={releaseBorder}
-      // resizeData={resizeData}
-      // isLoaded={isLoaded}
-      // styleBorder={styleBorder}
-      // unstyleBorder={unstyleBorder}
+    <div className="container" onMouseMove={moveBorder}>
+      <MemoizedChannels
+        grabBorder={grabBorder}
+        releaseBorder={releaseBorder}
+        resizeData={resizeData}
+        styleBorder={styleBorder}
+        unstyleBorder={unstyleBorder}
+        handle={handle}
+        sidebarMain={sidebarMain}
+        sidebarContainer={sidebarContainer}
       />
       <Switch>
         <Route path="/client/channels/:channelId">

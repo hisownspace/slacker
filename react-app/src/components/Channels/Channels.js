@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import "./Channels.css";
@@ -7,11 +7,13 @@ import { loadChannels, loadUserChannels } from "../../store/channel.js";
 import { getUserWorkspaces, getCurrentWorkspace } from "../../store/workspaces";
 
 function Channels({
-  moveBorder,
   grabBorder,
   releaseBorder,
   styleBorder,
   unstyleBorder,
+  handle,
+  sidebarMain,
+  sidebarContainer,
 }) {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -31,6 +33,11 @@ function Channels({
   );
 
   useEffect(() => {
+    /* Navigate to last channel user visited in the workspace
+     when user switches workspaces; if the user hasn't
+     visited any channels in this session, defaults to
+     the first channel in the workspace */
+
     const prevChannelId = prevChannels[workspaceId];
     if (prevChannelId) {
       history.push(`/client/channels/${prevChannelId}`);
@@ -57,6 +64,8 @@ function Channels({
   }, [dispatch, userWorkspaces]);
 
   useEffect(() => {
+    /* Gets the information about channels in current workspace whenever
+       whenever the workspace changes for display in sidebar */
     const tempCurrWorkspaces = [];
     for (let i = 0; i < currWorkspace?.channels?.length; i++) {
       tempCurrWorkspaces.push(channels[currWorkspace.channels[i]]);
@@ -65,9 +74,9 @@ function Channels({
   }, [currWorkspace]);
 
   return (
-    <div className="sidebar-container" onMouseMove={moveBorder}>
+    <div ref={sidebarContainer} className="sidebar-container">
       <Workspaces />
-      <div className="sidebar-main">
+      <div ref={sidebarMain} className="sidebar-main">
         <div className="sidebar-workspace-title">{currWorkspace.name}</div>
         {currChannels?.map((channel) => (
           <ul key={channel.id}>
@@ -76,6 +85,7 @@ function Channels({
         ))}
       </div>
       <div
+        ref={handle}
         onMouseDown={grabBorder}
         onMouseUp={releaseBorder}
         onMouseOver={styleBorder}
@@ -87,4 +97,5 @@ function Channels({
   );
 }
 
-export default Channels;
+const MemoizedChannels = memo(Channels);
+export default MemoizedChannels;
