@@ -94,12 +94,15 @@ export default function ChatInterface() {
     const tempResizeData = { ...resizeData };
     if (tracking.current) {
       const cursorScreenXDelta = e.screenX - tempResizeData.startCursorScreenX;
-      const newWidth = (tempResizeData.startWidth + cursorScreenXDelta) * 1.55;
-      if (newWidth <= 40) {
-        tempResizeData.resizeTarget.style.width = "0px";
+      const newWidth = tempResizeData.startWidth + cursorScreenXDelta + 75;
+      console.log("cursor start", tempResizeData.startCursorScreenX);
+      console.log("cursor change", cursorScreenXDelta);
+      console.log("new width", newWidth);
+      if (newWidth <= 100) {
+        tempResizeData.resizeTarget.parentNode.style.width = "67px";
         tempResizeData.atEdge = true;
       } else {
-        tempResizeData.resizeTarget.style.width = `${newWidth}px`;
+        tempResizeData.resizeTarget.parentNode.style.width = `${newWidth}px`;
         tempResizeData.atEdge = false;
       }
       document.addEventListener("mouseup", listenForMouseUp);

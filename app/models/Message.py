@@ -95,4 +95,5 @@ class Message(db.Model):
             "created_at": self.created_at.isoformat(),
             "date": self.created_at.strftime("%A, %B %-d")
             + to_ordinal[self.created_at.strftime("%-d")],
+            "time": self.created_at.strftime("%I:%M %p")
         }

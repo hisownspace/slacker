@@ -11,6 +11,7 @@
 .workspace-button {
   border: 1px solid #1e1e1e;
   padding: 2px;
+  margin: 1px 3px 0 3px;
 }
 
 .workspace-button:hover {

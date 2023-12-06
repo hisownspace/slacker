@@ -315,7 +315,7 @@ function Channel() {
                   <div className="message-user">
                     <span>
                       <span className="message-user-name">{message.user}</span>
-                      <span className="timestamp">{message.timestamp}</span>
+                      <span className="timestamp">{message.time}</span>
                     </span>
                   </div>
                   <div key={idx} className="chat-message">

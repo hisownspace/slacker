@@ -1,21 +1,12 @@
 .sidebar-container {
   height: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-content: stretch;
-  align-items: stretch;
+  /* width: 99px; */
+  max-width: 65vw;
+  /* flex: 1 1 250px; */
 
   & > .sidebar-main {
-    order: 0;
-    flex: 1 1 auto;
-    align-self: auto;
-  }
-
-  & > .content {
-    order: 0;
     flex: 1 1 auto;
     align-self: auto;
   }
@@ -24,9 +15,9 @@
 .sidebar-main {
   overflow: hidden;
   white-space: nowrap;
-  max-width: 50vw;
   margin-left: 55px;
-  padding-right: 0;
+  /* background-color: blue; */
+  flex: 1 100 auto;
 }
 
 .sidebar-workspace-title {
@@ -43,11 +34,13 @@
   width: 20px;
   cursor: col-resize;
   background: linear-gradient(lightgrey, lightgrey) no-repeat center/1px 100%;
+  flex-shrink: 0;
 }
 
 .resize-handle-selected {
   width: 20px;
   background: linear-gradient(#44acfd, #44acfd) no-repeat center/3px 100%;
+  flex-shrink: 0;
 }
 
 .sidebar-workspace-title {

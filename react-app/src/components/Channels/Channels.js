@@ -90,6 +90,7 @@ function Channels({
         onMouseUp={releaseBorder}
         onMouseOver={styleBorder}
         onMouseLeave={unstyleBorder}
+        onDoubleClick={(e) => (e.target.parentNode.style.width = "fit-content")}
         className="resize-handle"
         data-target=".sidebar-main"
       />
