@@ -1,0 +1,24 @@
+.profile-dropdown {
+  position: absolute;
+  top: 75px;
+  right: 5px;
+  z-index: 9999;
+}
+
+.navbar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  border-bottom: 1px solid lightgrey;
+  height: 6vh;
+  width: 100vw;
+  margin-bottom: 90px;
+}
+
+.profile-button {
+  margin-right: 25px;
+}
+
+.profile-button-items {
+  margin: 0;
+}

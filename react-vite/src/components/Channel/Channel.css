@@ -1,0 +1,234 @@
+.channel-chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 83vh;
+}
+
+h2 {
+  width: 100%;
+  position: fixed;
+  /* background-color: blue; */
+  margin: 10px;
+  font-size:;
+}
+
+.message-options {
+  display: inline-block;
+  width: 24px;
+}
+
+.message-options:hover {
+  filter: grayscale(75%);
+}
+
+.channel-message {
+  position: relative;
+  width: 100%;
+}
+
+.emoji-box {
+  display: none;
+  position: absolute;
+  top: -20px;
+  right: 65px;
+  cursor: pointer;
+  height: 30px;
+  border-radius: 3px;
+  border: 1px solid #333333;
+  background-color: #1e1e1e;
+  z-index: 9999999;
+  padding: 3px 6px;
+}
+
+.add-reaction-image > img {
+  object-fit: contain;
+  height: 30px;
+  margin: -5px -2px -9px -4px;
+  filter: invert(50%);
+}
+
+.add-reaction-image > img:hover {
+  filter: invert(75%);
+}
+
+.reaction {
+  cursor: pointer;
+  list-style: none;
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 15px 15px;
+  margin: 0px 3px 8px 0;
+  font-size: 13px;
+  box-sizing: border-box;
+  color: white;
+}
+
+.emoji-container {
+  position: absolute;
+  cursor: pointer;
+  overflow-y: hidden;
+  background-color: #1f1f1f;
+  width: 231px;
+  top: 20px;
+  height: 150px;
+  right: 63px;
+  z-index: 999;
+  border: 1px solid #333333;
+  border-radius: 5px 5px 5px 5px;
+  padding: 0 0 5px 5px;
+}
+
+.above {
+  top: -180px;
+}
+
+.emoji-container:hover {
+  overflow-y: scroll;
+}
+
+.emoji-container::-webkit-scrollbar {
+  width: 10px;
+  height: 20px;
+}
+.emoji-container::-webkit-scrollbar-track {
+  padding: 3px;
+  border-radius: 15px;
+}
+
+.emoji-container::-webkit-scrollbar-thumb {
+  background: grey;
+  border-radius: 5px;
+  width: 3px;
+}
+
+.emoji-group {
+  color: white;
+  margin: 7px 0 7px 30px;
+}
+
+.reaction-highlight {
+  background-color: #006ee6;
+  border: 1px solid #006ee6;
+}
+
+.reaction-no-highlight {
+  background-color: #4a4a4a;
+  border: 1px solid #4a4a4a;
+}
+
+.reaction-no-highlight:hover {
+  border: 1px solid white;
+  box-sizing: border-box;
+}
+
+.chat-box {
+  justify-self: end;
+  margin-top: 58px;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 99.5%;
+  height: 100%;
+}
+
+.chat-form-container {
+  position: absolute;
+  bottom: 0;
+  width: 75%;
+  height: 100px;
+  background-color: #1e1e1e;
+}
+
+.chat-box::-webkit-scrollbar {
+  width: 10px;
+  height: 20px;
+}
+.chat-box::-webkit-scrollbar-track {
+  padding: 3px;
+  border-radius: 15px;
+  padding-right: 3px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+  background: lightgrey;
+  border-radius: 5px;
+  width: 3px;
+}
+
+#anchor {
+  overflow-anchor: auto;
+  height: 1px;
+}
+
+.chat-form {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.chat-form > input {
+  height: 60%;
+  width: 75%;
+  background-color: #333333;
+  color: white;
+  border: none;
+  padding: 5px;
+  border: 1px solid white;
+  border-right: 0;
+}
+
+/* .chat-form > input:focus { */
+/*   outline-width: 0px; */
+/*   border: 2px solid white; */
+/*   border-right: 0; */
+/* } */
+
+.chat-form > button {
+  height: 72%;
+  background-color: #333333;
+  border: 0;
+  padding: 15px;
+  border: 1px solid white;
+  border-left: 0;
+}
+
+.message-user {
+  /* margin-right: 0; */
+  font-size: 1em;
+  /* line-height: 0; */
+  /* width: 100%; */
+  /* margin: 0 20px 10px 0; */
+  padding-left: 6px;
+}
+
+.message-emojis {
+  margin: 0;
+  padding-left: 11px;
+}
+
+.message-user-name {
+  font-weight: bold;
+}
+
+.timestamp {
+  font-size: 10px;
+  margin-left: 10px;
+}
+
+.chat-message {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content {
+  width: 100%;
+  display: block;
+  font-size: 1em;
+  padding: 10px 10px 10px 10px;
+  box-sizing: border-box;
+  /* background: #242424; */
+}

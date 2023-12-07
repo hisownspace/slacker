@@ -21,7 +21,6 @@ socketio = SocketIO(
 @socketio.on("join")
 def handle_join(channel_id):
     print(current_user)
-    print(session)
     print("joining channel", channel_id)
     join_room(channel_id)
 

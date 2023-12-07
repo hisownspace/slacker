@@ -1,0 +1,11 @@
+.container {
+  position: fixed;
+  top: 6.1vh;
+  height: 95vh;
+  display: flex;
+  width: 100%;
+}
+
+.no-select {
+  user-select: none;
+}
