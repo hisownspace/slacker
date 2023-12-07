@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_login import current_user
-from ..models import Reaction
+from ..models import Reaction, ReactionGroup
 
 emoji_routes = Blueprint("api/emojis", __name__)
 
@@ -8,7 +8,7 @@ emoji_routes = Blueprint("api/emojis", __name__)
 def get_all_emojis():
     reactions = {}
     for reaction in Reaction.query.all():
-        if reaction.to_dict()["group"] == "People & Body":
+        if reaction.to_dict()["group"] == "People & Body" or reaction.to_dict()["group"] == "Component":
             continue
         else:
             reactions[reaction.id] = reaction.to_dict()
@@ -27,3 +27,10 @@ def get_favorite_reactions():
             reactions[reaction["reaction_id"]] = 1
     print(reactions)
     return sorted(reactions, key=reactions.get, reverse=True)[:3]
+
+@emoji_routes.route("/groups")
+def get_all_groups():
+    groups = ReactionGroup.query.all()
+    groups = [group for group in groups if group.group_name != "Component" and
+              group.group_name != "People & Body"]
+    return [group.group_name for group in groups]

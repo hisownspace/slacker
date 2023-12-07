@@ -9,22 +9,65 @@ import {
 } from "../../store/messages";
 import "./Channel.css";
 import { setWorkspaceChannel } from "../../store/channel";
-import { loadAllEmojis, loadUserFavorites } from "../../store/emojis";
+import {
+  loadAllEmojis,
+  loadUserFavorites,
+  loadReactionGroups,
+} from "../../store/emojis";
+
+const groupEmojis = [
+  "😀️",
+  // "🧍️",
+  // "🏿",
+  "🦜️",
+  "🥕️",
+  "✈️",
+  "♟️",
+  "👒",
+  "💬️",
+  "🚩",
+];
 
 const ReactionContainer = memo(
   ({ emojis, addEmojiToMessage, message, emojiBoxAbove }) => {
+    const dispatch = useDispatch();
+    const groups = useSelector((state) => state.emojis.groups);
+    const groupLinks = useRef({});
+
+    useEffect(() => {
+      dispatch(loadReactionGroups());
+    }, []);
+
+    const test = (groupName) => {
+      console.log(groupName);
+      console.log(groupLinks.current);
+      groupLinks.current[groupName].scrollIntoView();
+    };
     return (
       <div
         className={emojiBoxAbove ? "emoji-container above" : "emoji-container"}
       >
+        <div className="emoji-group-icons">
+          {groups.map((groupName, idx) => (
+            <span key={groupName} onClick={() => test(groupName)}>
+              {groupEmojis[idx]}
+            </span>
+          ))}
+        </div>
         {Object.values(emojis).map((emoji, idx) => (
           <span key={`emoji-${emoji.id}`}>
             {idx === 0 ||
-            (idx + 1 < Object.values(emojis).length &&
+            (idx < Object.values(emojis).length &&
               Object.values(emojis)[idx].group !==
                 Object.values(emojis)[idx - 1].group) ? (
               <>
-                <div className="emoji-group">{emoji.group}</div>
+                <div
+                  id={emoji.group.split(" ").join("-")}
+                  className="emoji-group"
+                  ref={(el) => (groupLinks.current[emoji.group] = el)}
+                >
+                  {emoji.group}
+                </div>
                 <span
                   onClick={() => addEmojiToMessage(emoji.id, message.id)}
                   id={`emoji-${emoji.id}`}
@@ -249,17 +292,19 @@ function Channel() {
     }
   };
 
-  const hideEmojis = () => {
-    const channelMessages = document.querySelectorAll(".channel-message");
-    const emojiBoxes = document.querySelectorAll(".emoji-box");
-    for (let i = 0; i < channelMessages.length; i++) {
-      const box = emojiBoxes[i];
-      const message = channelMessages[i];
-      message.style.backgroundColor = "#1f1f1f";
-      box.style.display = "none";
+  const hideEmojis = (e) => {
+    if (!groupEmojis.includes(e.target.innerText)) {
+      const channelMessages = document.querySelectorAll(".channel-message");
+      const emojiBoxes = document.querySelectorAll(".emoji-box");
+      for (let i = 0; i < channelMessages.length; i++) {
+        const box = emojiBoxes[i];
+        const message = channelMessages[i];
+        message.style.backgroundColor = "#1f1f1f";
+        box.style.display = "none";
+      }
+      setReactionContainer(null);
+      document.removeEventListener("click", hideEmojis);
     }
-    setReactionContainer(null);
-    document.removeEventListener("click", hideEmojis);
   };
 
   return (
@@ -298,7 +343,10 @@ function Channel() {
                     </span>
                   ) : null,
                 )}
-                <span className="add-reaction-image" onClick={showEmojis}>
+                <span
+                  className="add-reaction-image message-options"
+                  onClick={showEmojis}
+                >
                   <img src={addReaction} />
                 </span>
               </div>
@@ -306,6 +354,7 @@ function Channel() {
                 <ReactionContainer
                   emojis={emojis}
                   addEmojiToMessage={addEmojiToMessage}
+                  className="message-options"
                   message={message}
                   emojiBoxAbove={emojiBoxAbove}
                 />

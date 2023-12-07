@@ -17,6 +17,7 @@ h2 {
 .message-options {
   display: inline-block;
   width: 24px;
+  cursor: pointer;
 }
 
 .message-options:hover {
@@ -33,7 +34,6 @@ h2 {
   position: absolute;
   top: -20px;
   right: 65px;
-  cursor: pointer;
   height: 30px;
   border-radius: 3px;
   border: 1px solid #333333;
@@ -67,7 +67,6 @@ h2 {
 
 .emoji-container {
   position: absolute;
-  cursor: pointer;
   overflow-y: hidden;
   background-color: #1f1f1f;
   width: 231px;
@@ -223,4 +222,9 @@ h2 {
   padding: 10px 10px 10px 10px;
   box-sizing: border-box;
   /* background: #242424; */
+}
+
+.emoji-group-icons span {
+  margin: 3px;
+  cursor: pointer;
 }

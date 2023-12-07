@@ -1,7 +1,7 @@
 import os
 import time
 from flask import request
-from flask_socketio import SocketIO, emit, join_room, leave_room, send
+from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask_login import current_user
 
 from app.models import db, User, Message, Reaction, UserReaction
@@ -20,6 +20,8 @@ socketio = SocketIO(
 
 @socketio.on("join")
 def handle_join(channel_id):
+    print(current_user)
+    print(session)
     print("joining channel", channel_id)
     join_room(channel_id)
 
