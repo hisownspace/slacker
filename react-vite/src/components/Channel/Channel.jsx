@@ -396,6 +396,7 @@ function Channel() {
                   </div>
                 </div>
               </div>
+              <div ref={anchorRef} id="anchor"></div>
             </div>
           ))}
         <div ref={anchorRef} id="anchor"></div>

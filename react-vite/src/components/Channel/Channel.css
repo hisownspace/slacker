@@ -1,4 +1,5 @@
 .channel-chat {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -129,16 +130,8 @@ h2 {
   overflow-y: scroll;
   display: flex;
   flex-direction: column-reverse;
-  width: 99.5%;
+  /* width: 99.5%; */
   height: 100%;
-}
-
-.chat-form-container {
-  position: absolute;
-  bottom: 0;
-  width: 75%;
-  height: 100px;
-  background-color: #1e1e1e;
 }
 
 .chat-box::-webkit-scrollbar {
@@ -155,6 +148,17 @@ h2 {
   background: lightgrey;
   border-radius: 5px;
   width: 3px;
+}
+
+.chat-form-container {
+  position: absolute;
+  bottom: -100px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 90%;
+  height: 100px;
+  background-color: #1e1e1e;
 }
 
 #anchor {
@@ -180,12 +184,6 @@ h2 {
   border: 1px solid white;
   border-right: 0;
 }
-
-/* .chat-form > input:focus { */
-/*   outline-width: 0px; */
-/*   border: 2px solid white; */
-/*   border-right: 0; */
-/* } */
 
 .chat-form > button {
   height: 72%;
