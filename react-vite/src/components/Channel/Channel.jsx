@@ -7,6 +7,7 @@ import {
   loadChannelMessages,
   clearChannelMessages,
   deleteMessage,
+  addMessage,
 } from "../../store/messages";
 import { setWorkspaceChannel } from "../../store/channel";
 import {
@@ -30,10 +31,10 @@ const groupEmojis = [
   "🚩",
 ];
 
-const MessageSettings = ({ messageId, userId }) => {
+const MessageSettings = ({ messageId, userId, channelId }) => {
   const dispatch = useDispatch();
   const handleDelete = () => {
-    dispatch(deleteMessage(messageId, userId));
+    socket.emit("delete-chat", messageId, userId, channelId);
   };
 
   return (
@@ -149,6 +150,14 @@ function Channel() {
   const anchorRef = useRef(null);
 
   useEffect(() => {
+    socket.on("delete-chat", (messageId) => {
+      console.log("HELLEO");
+      dispatch(deleteMessage(messageId, user.id, channelId));
+    });
+    return () => socket.off("delete-chat");
+  }, []);
+
+  useEffect(() => {
     (async () => {
       await dispatch(loadAllEmojis());
       await dispatch(loadUserFavorites());
@@ -192,8 +201,7 @@ function Channel() {
     console.log("joining channel", channelId);
 
     socket.on("chat", (chat) => {
-      console.log("HELLO");
-      setMessages((messages) => [chat, ...messages]);
+      dispatch(addMessage(chat));
     });
 
     socket.on("connect", () => {
@@ -388,7 +396,11 @@ function Channel() {
                 </span>
               </div>
               {messageSettings === `message-${message.id}` ? (
-                <MessageSettings userId={user.id} messageId={message.id} />
+                <MessageSettings
+                  userId={user.id}
+                  messageId={message.id}
+                  channelId={channelId}
+                />
               ) : null}
               {reactionContainer === `message-${message.id}` ? (
                 <ReactionContainer
