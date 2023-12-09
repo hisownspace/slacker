@@ -42,7 +42,6 @@ export const clearChannelMessages = () => (dispatch) => {
 
 export const deleteMessage = (messageId, userId) => (dispatch) => {
   /* Demonstrate emitting socket in redux thunk */
-  console.log("HELLOEOEOEOEOEOEOEOEOEO");
   dispatch(messageDeleted(messageId, userId));
 };
 
@@ -64,7 +63,6 @@ export default function reducer(state = initialState, action) {
       return newState;
     case DELETED_MESSAGE:
       newState = [...state];
-      console.log(newState);
       const msgIdx = newState.findIndex((el) => el.id === action.payload);
       newState.splice(msgIdx, 1);
       return newState;

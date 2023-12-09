@@ -31,11 +31,13 @@ const groupEmojis = [
   "🚩",
 ];
 
-const MessageSettings = ({ messageId, userId, channelId }) => {
+const MessageSettings = ({ messageUserId, messageId, userId, channelId }) => {
   const dispatch = useDispatch();
   const handleDelete = () => {
     socket.emit("delete-chat", messageId, userId, channelId);
   };
+  console.log("messageUserId", messageUserId);
+  console.log("userId", userId);
 
   return (
     <div className="message-settings">
@@ -45,18 +47,20 @@ const MessageSettings = ({ messageId, userId, channelId }) => {
       <div className="horizontal-separator" />
       <div className="message-setting">Remind me about this</div>
       <div className="horizontal-separator" />
-      <div>
-        <div className="message-setting" id="edit-message">
-          Edit message
+      {messageUserId === userId ? (
+        <div>
+          <div className="message-setting" id="edit-message">
+            Edit message
+          </div>
+          <div
+            onClick={handleDelete}
+            className="message-setting red"
+            id="delete-message"
+          >
+            Delete message...
+          </div>
         </div>
-        <div
-          onClick={handleDelete}
-          className="message-setting red"
-          id="delete-message"
-        >
-          Delete message...
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 };
@@ -151,7 +155,6 @@ function Channel() {
 
   useEffect(() => {
     socket.on("delete-chat", (messageId) => {
-      console.log("HELLEO");
       dispatch(deleteMessage(messageId, user.id, channelId));
     });
     return () => socket.off("delete-chat");
@@ -400,6 +403,7 @@ function Channel() {
                   userId={user.id}
                   messageId={message.id}
                   channelId={channelId}
+                  messageUserId={message.user_id}
                 />
               ) : null}
               {reactionContainer === `message-${message.id}` ? (
