@@ -61,7 +61,7 @@ export default function Client() {
     setResizeData({
       ...resizeData,
       startWidth: sidebarMain.current.offsetWidth,
-      startCursorScreenX: e.screenX,
+      startCursorScreenX: e.clientX,
       resizeTarget: sidebarMain.current,
       parentElement: sidebarContainer.current,
       atEdge: false,
@@ -93,7 +93,7 @@ export default function Client() {
   const moveBorder = (e) => {
     const tempResizeData = { ...resizeData };
     if (tracking.current) {
-      const cursorScreenXDelta = e.screenX - tempResizeData.startCursorScreenX;
+      const cursorScreenXDelta = e.clientX - tempResizeData.startCursorScreenX;
       const newWidth = tempResizeData.startWidth + cursorScreenXDelta + 75;
       console.log("cursor start", tempResizeData.startCursorScreenX);
       console.log("cursor change", cursorScreenXDelta);

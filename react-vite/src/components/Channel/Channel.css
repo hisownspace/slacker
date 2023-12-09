@@ -12,12 +12,17 @@ h2 {
   position: fixed;
   /* background-color: blue; */
   margin: 10px;
-  font-size:;
 }
 
 .message-options {
   display: inline-block;
   width: 24px;
+  cursor: pointer;
+}
+
+.space {
+  margin-left: 10px;
+  margin-right: -10px;
 }
 
 .message-options:hover {
@@ -34,12 +39,11 @@ h2 {
   position: absolute;
   top: -20px;
   right: 65px;
-  cursor: pointer;
   height: 30px;
   border-radius: 3px;
   border: 1px solid #333333;
   background-color: #1e1e1e;
-  z-index: 9999999;
+  z-index: 2;
   padding: 3px 6px;
 }
 
@@ -68,7 +72,6 @@ h2 {
 
 .emoji-container {
   position: absolute;
-  cursor: pointer;
   overflow-y: hidden;
   background-color: #1f1f1f;
   width: 231px;
@@ -77,8 +80,50 @@ h2 {
   right: 63px;
   z-index: 999;
   border: 1px solid #333333;
-  border-radius: 5px 5px 5px 5px;
+  border-radius: 5px;
   padding: 0 0 5px 5px;
+}
+
+.message-settings {
+  position: absolute;
+  background-color: #1f1f1f;
+  right: 95px;
+  top: -25px;
+  z-index: 99;
+  border: 1px solid #333333;
+  border-radius: 5px;
+  /* padding: 5px 10px; */
+}
+
+.horizontal-separator {
+  height: 1px;
+  border-top: 1px solid #333333;
+  width: 100%;
+}
+
+.red {
+  color: red;
+}
+
+.message-setting {
+  margin: 8px 0;
+  padding: 3px 10px;
+  user-select: none;
+  cursor: pointer;
+}
+
+#delete-message {
+  padding-top: 3px;
+  margin-top: 0;
+}
+
+#edit-message {
+  padding-bottom: 3px;
+  margin-bottom: 0;
+}
+
+.message-setting:hover {
+  background-color: #006ee6;
 }
 
 .above {
@@ -107,6 +152,10 @@ h2 {
 .emoji-group {
   color: white;
   margin: 7px 0 7px 30px;
+}
+
+.emoji-group-icons {
+  cursor: pointer;
 }
 
 .reaction-highlight {

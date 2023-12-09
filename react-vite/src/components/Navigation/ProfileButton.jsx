@@ -15,6 +15,7 @@ function ProfileButton() {
 
   const toggleMenu = (e) => {
     e.stopPropagation();
+    console.log(e.target);
     setShowMenu(!showMenu);
   };
 
@@ -33,6 +34,7 @@ function ProfileButton() {
   }, [showMenu]);
 
   const handleLogout = (e) => {
+    console.log("HELLO!!!!!");
     e.preventDefault();
     dispatch(logout());
     navigateTo("/");
@@ -55,7 +57,7 @@ function ProfileButton() {
               <li>{user.username}</li>
               <li>{user.email}</li>
               <li>
-                <button onClick={logout}>Log Out</button>
+                <button onClick={handleLogout}>Log Out</button>
               </li>
             </>
           ) : (

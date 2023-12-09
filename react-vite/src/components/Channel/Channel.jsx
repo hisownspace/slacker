@@ -1,7 +1,7 @@
 import { socket } from "../../socket";
 import { useState, useEffect, memo, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import addReaction from "../../assets/add_reaction.png";
 import {
   loadChannelMessages,
@@ -13,6 +13,8 @@ import {
   loadUserFavorites,
   loadReactionGroups,
 } from "../../store/emojis";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { icon } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 const groupEmojis = [
   "😀️",
@@ -27,6 +29,27 @@ const groupEmojis = [
   "🚩",
 ];
 
+const MessageSettings = () => {
+  return (
+    <div className="message-settings">
+      <div className="message-setting">Copy link</div>
+      <div className="horizontal-separator" />
+      <div className="message-setting">Pin to this conversation</div>
+      <div className="horizontal-separator" />
+      <div className="message-setting">Remind me about this</div>
+      <div className="horizontal-separator" />
+      <div>
+        <div className="message-setting" id="edit-message">
+          Edit message
+        </div>
+        <div className="message-setting red" id="delete-message">
+          Delete message...
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ReactionContainer = memo(
   ({ emojis, addEmojiToMessage, message, emojiBoxAbove }) => {
     const dispatch = useDispatch();
@@ -38,9 +61,8 @@ const ReactionContainer = memo(
     }, []);
 
     const test = (groupName) => {
-      console.log(groupName);
-      console.log(groupLinks.current);
-      groupLinks.current[groupName].scrollIntoView();
+      groupLinks.current[groupName].parentNode.parentNode.scrollTop =
+        groupLinks.current[groupName].offsetTop;
     };
     return (
       <div
@@ -111,6 +133,7 @@ function Channel() {
   const [chatInput, setChatInput] = useState("");
   const [favorites, setFavorites] = useState([1, 2, 3]);
   const [reactionContainer, setReactionContainer] = useState();
+  const [messageSettings, setMessageSettings] = useState();
   const [emojiBoxAbove, setEmojiBoxAbove] = useState(false);
 
   const anchorRef = useRef(null);
@@ -212,14 +235,14 @@ function Channel() {
   };
 
   const showMessageOptions = (e) => {
-    if (!reactionContainer) {
+    if (!reactionContainer && !messageSettings) {
       e.currentTarget.children[0].style.display = "inline-block";
       e.currentTarget.style.backgroundColor = "#333333";
     }
   };
 
   const hideMessageOptions = (e) => {
-    if (!reactionContainer) {
+    if (!reactionContainer && !messageSettings) {
       e.currentTarget.children[0].style.display = "none";
       e.currentTarget.style.backgroundColor = "#1f1f1f";
     }
@@ -262,6 +285,21 @@ function Channel() {
     socket.emit("react", parseInt(emojiId), messageId, channelId, user.id);
   };
 
+  const showSettings = (e) => {
+    e.stopPropagation();
+    if (messageSettings === e.currentTarget.parentNode.parentNode.id) {
+      setMessageSettings(null);
+    } else {
+      setMessageSettings(e.currentTarget.parentNode.parentNode.id);
+      if (e.clientY < 300) {
+        // setEmojiBoxAbove(false);
+      } else {
+        // setEmojiBoxAbove(true);
+      }
+      document.addEventListener("click", hideEmojis);
+    }
+  };
+
   const showEmojis = (e) => {
     e.stopPropagation();
     if (reactionContainer === e.currentTarget.parentNode.parentNode.id) {
@@ -288,6 +326,7 @@ function Channel() {
         box.style.display = "none";
       }
       setReactionContainer(null);
+      setMessageSettings(null);
       document.removeEventListener("click", hideEmojis);
     }
   };
@@ -334,7 +373,13 @@ function Channel() {
                 >
                   <img src={addReaction} />
                 </span>
+                <span className="message-options space" onClick={showSettings}>
+                  <FontAwesomeIcon icon={icon({ name: "ellipsis-vertical" })} />
+                </span>
               </div>
+              {messageSettings === `message-${message.id}` ? (
+                <MessageSettings />
+              ) : null}
               {reactionContainer === `message-${message.id}` ? (
                 <ReactionContainer
                   emojis={emojis}
