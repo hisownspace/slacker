@@ -63,12 +63,15 @@ class Message(db.Model):
         secondary="user_reactions",
         overlaps="reactions,user_reactions",
         back_populates="message_reactions",
+        cascade="all, delete-orphan",
+        viewonly=True
     )
 
     reactions = db.relationship(
         "UserReaction",
         overlaps="message_reactions,user_reactions",
         back_populates="message",
+        cascade="all, delete-orphan"
     )
 
     def to_dict(self):

@@ -49,6 +49,19 @@ def handle_reaction(emoji_id, message_id, channel_id, user_id):
         db.session.commit()
         emit("react", message.to_dict(), broadcast=True)
 
+
+@socketio.on("delete-chat")
+def handle_chat_delete(message_id, user_id):
+    print(message_id)
+    print(user_id)
+    message = Message.query.get(message_id)
+    print(message.to_dict())
+    if message.user_id == user_id:
+        print("DELETING MESSAGE")
+        db.session.delete(message)
+        db.session.commit()
+    emit("delete-chat", message_id)
+
 @socketio.on("chat")
 def handle_chat(data):
     print("\U0001F636")
@@ -67,6 +80,8 @@ def handle_chat(data):
         db.session.commit()
         print("sending message to channel", channel_id)
         emit("chat", message.to_dict(), to=channel_id, broadcast=True)
+
+
 
 
 @socketio.on_error()

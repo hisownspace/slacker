@@ -32,7 +32,7 @@ class User(db.Model, UserMixin):
         "Message", secondary="user_reactions", back_populates="user_reactions"
     )
     reactions = db.relationship(
-        "UserReaction", overlaps="message_reactions", back_populates="user"
+        "UserReaction", overlaps="message_reactions", back_populates="user",
     )
     messages = db.relationship("Message", back_populates="user")
     owned_channels = db.relationship("Channel", back_populates="owner")
@@ -55,4 +55,5 @@ class User(db.Model, UserMixin):
             "workspaces": [workspace.id for workspace in self.workspaces],
             "channels": [channel.id for channel in self.channels],
             "groups": [group.id for group in self.groups],
+            "reactions": [reaction.reaction_id for reaction in self.reactions]
         }

@@ -6,6 +6,7 @@ import addReaction from "../../assets/add_reaction.png";
 import {
   loadChannelMessages,
   clearChannelMessages,
+  deleteMessage,
 } from "../../store/messages";
 import { setWorkspaceChannel } from "../../store/channel";
 import {
@@ -29,7 +30,12 @@ const groupEmojis = [
   "🚩",
 ];
 
-const MessageSettings = () => {
+const MessageSettings = ({ messageId, userId }) => {
+  const dispatch = useDispatch();
+  const handleDelete = () => {
+    dispatch(deleteMessage(messageId, userId));
+  };
+
   return (
     <div className="message-settings">
       <div className="message-setting">Copy link</div>
@@ -42,7 +48,11 @@ const MessageSettings = () => {
         <div className="message-setting" id="edit-message">
           Edit message
         </div>
-        <div className="message-setting red" id="delete-message">
+        <div
+          onClick={handleDelete}
+          className="message-setting red"
+          id="delete-message"
+        >
           Delete message...
         </div>
       </div>
@@ -378,7 +388,7 @@ function Channel() {
                 </span>
               </div>
               {messageSettings === `message-${message.id}` ? (
-                <MessageSettings />
+                <MessageSettings userId={user.id} messageId={message.id} />
               ) : null}
               {reactionContainer === `message-${message.id}` ? (
                 <ReactionContainer
