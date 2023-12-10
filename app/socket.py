@@ -42,18 +42,22 @@ def handle_edit(data):
 def handle_reaction(emoji_id, message_id, channel_id, user_id):
     # time.sleep(5)
     message = Message.query.get(message_id)
-    userReaction = UserReaction.query.get({"message_id": message_id,"user_id":user_id,
+    user_reaction = UserReaction.query.get({"message_id": message_id,"user_id":user_id,
                                           "reaction_id":emoji_id})
-    if userReaction:
-        db.session.delete(userReaction)
+    if user_reaction:
+        db.session.delete(user_reaction)
         db.session.commit()
         emit("react", message.to_dict(), broadcast=True)
     else:
         reaction = Reaction.query.get(emoji_id)
         
-        userReaction = UserReaction(reaction_id = int(emoji_id), user_id=user_id)
-        userReaction.message = message
-        db.session.add(userReaction)
+        user_reaction = UserReaction(reaction_id = int(emoji_id), user_id=user_id)
+        user_reaction.message = message
+        for reaction in message.reactions:
+            if reaction.reaction_id == emoji_id:
+                user_reaction.created_at = reaction.created_at
+
+        db.session.add(user_reaction)
         db.session.commit()
         emit("react", message.to_dict(), broadcast=True)
 
