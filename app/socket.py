@@ -29,6 +29,14 @@ def handle_leave(channel_id):
     print("leaving channel", channel_id)
     leave_room(channel_id)
 
+@socketio.on("edit-chat")
+def handle_edit(data):
+    message = Message.query.get(data["messageId"])
+    message.content = data["content"]
+    db.session.commit()
+    print(data)
+    emit("edit-chat", message.to_dict(), to=data["channelId"], broadcast=True)
+
 
 @socketio.on("react")
 def handle_reaction(emoji_id, message_id, channel_id, user_id):
@@ -86,6 +94,8 @@ def handle_chat(data):
 
 @socketio.on_error()
 def error_handler(e):
+    print("PRINTING ERRRORS!!!")
     print(request.event["message"])
     print(request.event["args"])
     print(e)
+

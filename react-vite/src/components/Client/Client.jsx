@@ -61,7 +61,7 @@ export default function Client() {
     setResizeData({
       ...resizeData,
       startWidth: sidebarMain.current.offsetWidth,
-      startCursorScreenX: e.clientX,
+      startCursorScreenX: e.screenX,
       resizeTarget: sidebarMain.current,
       parentElement: sidebarContainer.current,
       atEdge: false,
@@ -93,16 +93,16 @@ export default function Client() {
   const moveBorder = (e) => {
     const tempResizeData = { ...resizeData };
     if (tracking.current) {
-      const cursorScreenXDelta = e.clientX - tempResizeData.startCursorScreenX;
-      const newWidth = tempResizeData.startWidth + cursorScreenXDelta + 75;
+      const cursorScreenXDelta = e.screenX - tempResizeData.startCursorScreenX;
+      const newWidth = tempResizeData.startWidth + cursorScreenXDelta;
       console.log("cursor start", tempResizeData.startCursorScreenX);
       console.log("cursor change", cursorScreenXDelta);
       console.log("new width", newWidth);
       if (newWidth <= 100) {
-        tempResizeData.resizeTarget.parentNode.style.width = "67px";
+        tempResizeData.resizeTarget.style.width = "0px";
         tempResizeData.atEdge = true;
       } else {
-        tempResizeData.resizeTarget.parentNode.style.width = `${newWidth}px`;
+        tempResizeData.resizeTarget.style.width = `${newWidth}px`;
         tempResizeData.atEdge = false;
       }
       document.addEventListener("mouseup", listenForMouseUp);

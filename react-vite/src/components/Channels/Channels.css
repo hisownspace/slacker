@@ -1,14 +1,11 @@
 .sidebar-container {
   height: 100%;
-  /* overflow: hidden; */
   display: flex;
-  /* width: 99px; */
-  max-width: 65vw;
-  /* flex: 1 1 250px; */
+  max-width: 45vw;
 
   & > .sidebar-main {
-    flex: 1 1 auto;
-    align-self: auto;
+    flex: 1 1000 auto;
+    /* align-self: auto; */
   }
 }
 
@@ -16,8 +13,7 @@
   overflow: hidden;
   white-space: nowrap;
   margin-left: 55px;
-  /* background-color: blue; */
-  flex: 1 100 auto;
+  flex: 1 1000 auto;
 }
 
 .sidebar-workspace-title {

@@ -90,11 +90,14 @@ function Channels({
         onMouseUp={releaseBorder}
         onMouseOver={styleBorder}
         onMouseLeave={unstyleBorder}
-        onDoubleClick={(e) =>
-          e.target.parentNode.style.width == "fit-content"
-            ? (e.target.parentNode.style.width = "67px")
-            : (e.target.parentNode.style.width = "fit-content")
-        }
+        onDoubleClick={(e) => {
+          if (e.target.parentNode.children[1].style.width === "fit-content") {
+            e.target.parentNode.children[1].style.width = "0px";
+            e.currentTarget.style.cursor = "e-resize";
+          } else {
+            e.target.parentNode.children[1].style.width = "fit-content";
+          }
+        }}
         className="resize-handle"
         data-target=".sidebar-main"
       />

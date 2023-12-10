@@ -8,6 +8,7 @@ import {
   clearChannelMessages,
   deleteMessage,
   addMessage,
+  editMessage,
 } from "../../store/messages";
 import { setWorkspaceChannel } from "../../store/channel";
 import {
@@ -31,13 +32,25 @@ const groupEmojis = [
   "🚩",
 ];
 
-const MessageSettings = ({ messageUserId, messageId, userId, channelId }) => {
+const MessageSettings = ({
+  messageUserId,
+  messageId,
+  userId,
+  channelId,
+  setEditMsg,
+  setEditInput,
+  messageContent,
+}) => {
   const dispatch = useDispatch();
   const handleDelete = () => {
     socket.emit("delete-chat", messageId, userId, channelId);
   };
-  console.log("messageUserId", messageUserId);
-  console.log("userId", userId);
+
+  const handleEdit = () => {
+    document.getElementById(`message-${messageId}`);
+    setEditMsg(messageId);
+    setEditInput(messageContent);
+  };
 
   return (
     <div className="message-settings">
@@ -49,7 +62,11 @@ const MessageSettings = ({ messageUserId, messageId, userId, channelId }) => {
       <div className="horizontal-separator" />
       {messageUserId === userId ? (
         <div>
-          <div className="message-setting" id="edit-message">
+          <div
+            onClick={handleEdit}
+            className="message-setting"
+            id="edit-message"
+          >
             Edit message
           </div>
           <div
@@ -146,10 +163,12 @@ function Channel() {
   const [channel, setChannel] = useState(null);
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
+  const [editInput, setEditInput] = useState("");
   const [favorites, setFavorites] = useState([1, 2, 3]);
   const [reactionContainer, setReactionContainer] = useState();
   const [messageSettings, setMessageSettings] = useState();
   const [emojiBoxAbove, setEmojiBoxAbove] = useState(false);
+  const [editMsg, setEditMsg] = useState(null);
 
   const anchorRef = useRef(null);
 
@@ -207,6 +226,10 @@ function Channel() {
       dispatch(addMessage(chat));
     });
 
+    socket.on("edit-chat", (chat) => {
+      dispatch(editMessage(chat));
+    });
+
     socket.on("connect", () => {
       const transport = socket.io.engine.transport.name;
       console.log(transport);
@@ -224,12 +247,27 @@ function Channel() {
     return () => {
       socket.emit("leave", channelId);
       socket.off("chat");
+      socket.off("edit-chat");
       socket.off("react", addEmoji);
     };
   }, [channelId, channels]);
 
   const updateChatInput = (e) => {
     setChatInput(e.target.value);
+  };
+  const updateEditInput = (e) => {
+    setEditInput(e.target.value);
+  };
+
+  const sendEdit = (e) => {
+    e.preventDefault();
+    const messageId = parseInt(e.target.id.split("-")[1]);
+    socket.emit("edit-chat", {
+      messageId,
+      content: editInput,
+      channelId,
+    });
+    setEditMsg(null);
   };
 
   const sendChat = (e) => {
@@ -365,111 +403,137 @@ function Channel() {
               : 0,
           )
           .reverse()
-          .map((message, idx) => (
-            <div
-              className="channel-message"
-              key={idx}
-              id={`message-${message.id}`}
-              onMouseOver={showMessageOptions}
-              onMouseLeave={hideMessageOptions}
-            >
-              <div className="emoji-box">
-                {favorites.map((reaction_id) =>
-                  reaction_id && emojis[reaction_id] ? (
-                    <span
-                      onClick={() =>
-                        addEmojiToMessage(emojis[reaction_id].id, message.id)
-                      }
-                      id={`emoji-${emojis[reaction_id].id}`}
-                      key={`emoji-${emojis[reaction_id].id}`}
-                      className="message-options"
-                    >
-                      {emojis[reaction_id].unicode}
-                    </span>
-                  ) : null,
-                )}
-                <span
-                  className="add-reaction-image message-options"
-                  onClick={showEmojis}
-                >
-                  <img src={addReaction} />
-                </span>
-                <span className="message-options space" onClick={showSettings}>
-                  <FontAwesomeIcon icon={icon({ name: "ellipsis-vertical" })} />
-                </span>
-              </div>
-              {messageSettings === `message-${message.id}` ? (
-                <MessageSettings
-                  userId={user.id}
-                  messageId={message.id}
-                  channelId={channelId}
-                  messageUserId={message.user_id}
-                />
-              ) : null}
-              {reactionContainer === `message-${message.id}` ? (
-                <ReactionContainer
-                  emojis={emojis}
-                  addEmojiToMessage={addEmojiToMessage}
-                  className="message-options"
-                  message={message}
-                  emojiBoxAbove={emojiBoxAbove}
-                />
-              ) : null}
-              <div>
-                <div className="message-container">
-                  <div className="message-user">
-                    <span>
-                      <span className="message-user-name">{message.user}</span>
-                      <span className="timestamp">{message.time}</span>
-                    </span>
-                  </div>
-                  <div key={idx} className="chat-message">
-                    {message.new_day ? (
-                      <div className="new-day-container">
-                        <span>{message.new_day}</span>
-                      </div>
-                    ) : null}
-                    <div
-                      className="message-content"
-                      id={`message-content-${message.id}`}
-                    >
-                      {message.content}
+          .map((message, idx) =>
+            editMsg !== message.id ? (
+              <div
+                className="channel-message"
+                key={idx}
+                id={`message-${message.id}`}
+                onMouseOver={showMessageOptions}
+                onMouseLeave={hideMessageOptions}
+              >
+                <div className="emoji-box">
+                  {favorites.map((reaction_id) =>
+                    reaction_id && emojis[reaction_id] ? (
+                      <span
+                        onClick={() =>
+                          addEmojiToMessage(emojis[reaction_id].id, message.id)
+                        }
+                        id={`emoji-${emojis[reaction_id].id}`}
+                        key={`emoji-${emojis[reaction_id].id}`}
+                        className="message-options"
+                      >
+                        {emojis[reaction_id].unicode}
+                      </span>
+                    ) : null,
+                  )}
+                  <span
+                    className="add-reaction-image message-options"
+                    onClick={showEmojis}
+                  >
+                    <img src={addReaction} />
+                  </span>
+                  <span
+                    className="message-options space"
+                    onClick={showSettings}
+                  >
+                    <FontAwesomeIcon
+                      icon={icon({ name: "ellipsis-vertical" })}
+                    />
+                  </span>
+                </div>
+                {messageSettings === `message-${message.id}` ? (
+                  <MessageSettings
+                    userId={user.id}
+                    messageId={message.id}
+                    channelId={channelId}
+                    messageUserId={message.user_id}
+                    setEditMsg={setEditMsg}
+                    setEditInput={setEditInput}
+                    messageContent={message.content}
+                  />
+                ) : null}
+                {reactionContainer === `message-${message.id}` ? (
+                  <ReactionContainer
+                    emojis={emojis}
+                    addEmojiToMessage={addEmojiToMessage}
+                    className="message-options"
+                    message={message}
+                    emojiBoxAbove={emojiBoxAbove}
+                  />
+                ) : null}
+                <div>
+                  <div className="message-container">
+                    <div className="message-user">
+                      <span>
+                        <span className="message-user-name">
+                          {message.user}
+                        </span>
+                        <span className="timestamp">{message.time}</span>
+                      </span>
                     </div>
-                    <ul className="message-emojis">
-                      {Object.values(message.reactions)
-                        .sort((a, b) =>
-                          a.created_at > b.created_at
-                            ? 1
-                            : a.created_at < b.created_at
-                            ? -1
-                            : 0,
-                        )
-                        .map((reaction, idx) => (
-                          <li
-                            key={`message-${reaction.message_id}-${reaction.id}-${idx}`}
-                            onClick={() =>
-                              addEmojiToMessage(
-                                reaction.reaction_id,
-                                reaction.message_id,
-                              )
-                            }
-                            className={
-                              user && reaction.user_ids.includes(user.id)
-                                ? "reaction-highlight reaction"
-                                : "reaction-no-highlight reaction"
-                            }
-                          >
-                            {reaction.reaction}
-                            {reaction.quantity}
-                          </li>
-                        ))}
-                    </ul>
+                    <div key={idx} className="chat-message">
+                      {message.new_day ? (
+                        <div className="new-day-container">
+                          <span>{message.new_day}</span>
+                        </div>
+                      ) : null}
+                      <div
+                        className="message-content"
+                        id={`message-content-${message.id}`}
+                      >
+                        {message.content}
+                      </div>
+                      <ul className="message-emojis">
+                        {Object.values(message.reactions)
+                          .sort((a, b) =>
+                            a.created_at > b.created_at
+                              ? 1
+                              : a.created_at < b.created_at
+                              ? -1
+                              : 0,
+                          )
+                          .map((reaction, idx) => (
+                            <li
+                              key={`message-${reaction.message_id}-${reaction.id}-${idx}`}
+                              onClick={() =>
+                                addEmojiToMessage(
+                                  reaction.reaction_id,
+                                  reaction.message_id,
+                                )
+                              }
+                              className={
+                                user && reaction.user_ids.includes(user.id)
+                                  ? "reaction-highlight reaction"
+                                  : "reaction-no-highlight reaction"
+                              }
+                            >
+                              {reaction.reaction}
+                              {reaction.quantity}
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
+                <div ref={anchorRef} id="anchor"></div>
               </div>
-              <div ref={anchorRef} id="anchor"></div>
-            </div>
-          ))}
+            ) : (
+              <div
+                key={`message-${message.id}`}
+                className="edit-form-container"
+              >
+                <form
+                  className="edit-form"
+                  id={`message-${message.id}`}
+                  onSubmit={sendEdit}
+                >
+                  <input value={editInput} onChange={updateEditInput} />
+                  <button type="submit">Send</button>
+                </form>
+              </div>
+            ),
+          )}
         <div ref={anchorRef} id="anchor"></div>
       </div>
       <div className="chat-form-container">
